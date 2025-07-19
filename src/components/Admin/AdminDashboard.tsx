@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Users, Video, BookOpen, BarChart3, Settings, PlayCircle, MessageSquare, Calendar } from 'lucide-react';
+import { Users, Video, BookOpen, BarChart3, Settings, PlayCircle, MessageSquare, Calendar, HelpCircle } from 'lucide-react';
 import { useStats } from '../../hooks/useStats';
 import TopicManager from './TopicManager';
 import VideoManager from './VideoManager';
 import CommunityManager from './CommunityManager';
 import CalendarManager from './CalendarManager';
+import QuizManager from './QuizManager';
+import ProgressManager from './ProgressManager';
 import AnalyticsSection from './AnalyticsSection';
 import Navbar from '../Layout/Navbar';
 
@@ -15,8 +17,10 @@ const AdminDashboard: React.FC = () => {
   const tabs = [
     { id: 'topics', label: 'টপিক ম্যানেজমেন্ট', icon: BookOpen },
     { id: 'videos', label: 'ভিডিও ম্যানেজমেন্ট', icon: Video },
+    { id: 'quizzes', label: 'কুইজ ম্যানেজমেন্ট', icon: HelpCircle },
     { id: 'community', label: 'কমিউনিটি', icon: MessageSquare },
     { id: 'calendar', label: 'ক্যালেন্ডার', icon: Calendar },
+    { id: 'progress', label: 'শিক্ষার্থীর অগ্রগতি', icon: Users },
     { id: 'classroom', label: 'ক্লাসরুম', icon: PlayCircle },
     { id: 'analytics', label: 'রিপোর্ট', icon: BarChart3 },
   ];
@@ -82,8 +86,10 @@ const AdminDashboard: React.FC = () => {
         <div className="space-y-6">
           {activeTab === 'topics' && <TopicManager />}
           {activeTab === 'videos' && <VideoManager />}
+          {activeTab === 'quizzes' && <QuizManager />}
           {activeTab === 'community' && <CommunityManager />}
           {activeTab === 'calendar' && <CalendarManager />}
+          {activeTab === 'progress' && <ProgressManager />}
           {activeTab === 'classroom' && (
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-bold text-gray-900 mb-4">ক্লাসরুম ম্যানেজমেন্ট</h2>

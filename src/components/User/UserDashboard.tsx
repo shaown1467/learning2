@@ -2,29 +2,73 @@ import React, { useState } from 'react';
 import { Play, BookOpen, Award, Clock, MessageSquare, Calendar, Trophy, Download, File } from 'lucide-react';
 import { useFirestore } from '../../hooks/useFirestore';
 import { useStats } from '../../hooks/useStats';
-import { Topic, Video } from '../../types';
+import { Topic, Video, UserProgress } from '../../types';
 import { getThumbnailUrl } from '../../utils/youtube';
 import { formatFileSize, getFileIcon } from '../../utils/fileUpload';
-import YouTubePlayer from '../Common/YouTubePlayer';
+import VideoPlayer from './VideoPlayer';
 import CommunitySection from './CommunitySection';
 import CalendarSection from './CalendarSection';
 import LeaderboardSection from './LeaderboardSection';
 import Navbar from '../Layout/Navbar';
+import { useAuth } from '../../contexts/AuthContext';
 
 const UserDashboard: React.FC = () => {
   const { documents: topics } = useFirestore('topics', 'order');
   const { documents: videos } = useFirestore('videos', 'order');
+  const { documents: userProgress, addDocument: addProgress } = useFirestore('userProgress');
   const { stats } = useStats();
   const [activeSection, setActiveSection] = useState('courses');
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
-  const [playerState, setPlayerState] = useState({ isOpen: false, videoId: '', title: '' });
+  const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
+  const { currentUser } = useAuth();
 
-  const openPlayer = (videoId: string, title: string) => {
-    setPlayerState({ isOpen: true, videoId, title });
+  const handleVideoSelect = async (video: Video) => {
+    if (!currentUser) return;
+    
+    // Check if user can access this video
+    const userVideoProgress = userProgress.find((progress: UserProgress) => 
+      progress.userId === currentUser.uid && progress.videoId === video.id
+    );
+    
+    // If no progress exists, create initial progress
+    if (!userVideoProgress) {
+      const topicVideos = getTopicVideos(video.topicId).sort((a, b) => a.order - b.order);
+      const videoIndex = topicVideos.findIndex(v => v.id === video.id);
+      
+      // Check if previous videos are completed
+      let canAccess = videoIndex === 0; // First video is always accessible
+      
+      if (videoIndex > 0) {
+        const previousVideo = topicVideos[videoIndex - 1];
+        const previousProgress = userProgress.find((progress: UserProgress) => 
+          progress.userId === currentUser.uid && progress.videoId === previousVideo.id
+        );
+        canAccess = previousProgress?.watched || false;
+      }
+      
+      try {
+        await addProgress({
+          userId: currentUser.uid,
+          videoId: video.id,
+          watched: false,
+          canAccess,
+          summary: '',
+          workLink: '',
+          quizPassed: false,
+          quizAttempts: 0
+        });
+      } catch (error) {
+        console.error('Error creating progress:', error);
+      }
+    }
+    
+    setSelectedVideo(video);
   };
-
-  const closePlayer = () => {
-    setPlayerState({ isOpen: false, videoId: '', title: '' });
+  
+  const handleVideoComplete = () => {
+    // Refresh the page or update state to reflect completion
+    setSelectedVideo(null);
+    // You might want to refresh user progress here
   };
 
   const getTopicVideos = (topicId: string) => {
@@ -72,6 +116,30 @@ const UserDashboard: React.FC = () => {
   if (selectedTopic) {
     const topic = topics.find((t: Topic) => t.id === selectedTopic);
     const topicVideos = getTopicVideos(selectedTopic);
+    
+    if (selectedVideo) {
+      return (
+        <div className="min-h-screen bg-gray-50">
+          <Navbar />
+          
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="mb-6">
+              <button
+                onClick={() => setSelectedVideo(null)}
+                className="text-blue-600 hover:text-blue-800 mb-4"
+              >
+                ← ভিডিও তালিকায় ফিরে যান
+              </button>
+            </div>
+            
+            <VideoPlayer 
+              video={selectedVideo} 
+              onVideoComplete={handleVideoComplete}
+            />
+          </div>
+        </div>
+      );
+    }
 
     return (
       <div className="min-h-screen bg-gray-50">
@@ -94,7 +162,8 @@ const UserDashboard: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {topicVideos.map((video: Video, index) => (
-              <div key={video.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+              <div key={video.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+                   onClick={() => handleVideoSelect(video)}>
                 <div className="relative">
                   <img
                     src={getThumbnailUrl(video.videoId)}
@@ -103,7 +172,10 @@ const UserDashboard: React.FC = () => {
                   />
                   <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
                     <button
-                      onClick={() => openPlayer(video.videoId, video.title)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleVideoSelect(video);
+                      }}
                       className="bg-white text-gray-900 p-4 rounded-full hover:bg-gray-100 transition-colors"
                     >
                       <Play className="h-6 w-6" />
@@ -142,7 +214,10 @@ const UserDashboard: React.FC = () => {
                   )}
                   
                   <button
-                    onClick={() => openPlayer(video.videoId, video.title)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleVideoSelect(video);
+                    }}
                     className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
                   >
                     <Play className="h-4 w-4" />
@@ -153,12 +228,6 @@ const UserDashboard: React.FC = () => {
             ))}
           </div>
 
-          <YouTubePlayer
-            videoId={playerState.videoId}
-            isOpen={playerState.isOpen}
-            onClose={closePlayer}
-            title={playerState.title}
-          />
         </div>
       </div>
     );

@@ -32,6 +32,7 @@ export interface Quiz {
   videoId: string;
   questions: Question[];
   passingScore: number;
+  points: number;
 }
 
 export interface Question {
@@ -46,11 +47,14 @@ export interface UserProgress {
   userId: string;
   videoId: string;
   watched: boolean;
+  canAccess: boolean;
   summary: string;
   workLink: string;
   quizScore?: number;
   quizPassed: boolean;
+  quizAttempts: number;
   completedAt?: Date;
+  submittedAt?: Date;
 }
 
 export interface Category {
