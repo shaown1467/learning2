@@ -8,6 +8,7 @@ import CalendarManager from './CalendarManager';
 import QuizManager from './QuizManager';
 import ProgressManager from './ProgressManager';
 import AnalyticsSection from './AnalyticsSection';
+import ChallengeManager from './ChallengeManager';
 import Navbar from '../Layout/Navbar';
 
 const AdminDashboard: React.FC = () => {
@@ -19,6 +20,7 @@ const AdminDashboard: React.FC = () => {
     { id: 'videos', label: 'ভিডিও ম্যানেজমেন্ট', icon: Video },
     { id: 'quizzes', label: 'কুইজ ম্যানেজমেন্ট', icon: HelpCircle },
     { id: 'community', label: 'কমিউনিটি', icon: MessageSquare },
+    { id: 'challenges', label: 'চ্যালেঞ্জ', icon: Trophy },
     { id: 'calendar', label: 'ক্যালেন্ডার', icon: Calendar },
     { id: 'progress', label: 'শিক্ষার্থীর অগ্রগতি', icon: Users },
     { id: 'classroom', label: 'ক্লাসরুম', icon: PlayCircle },
@@ -88,6 +90,7 @@ const AdminDashboard: React.FC = () => {
           {activeTab === 'videos' && <VideoManager />}
           {activeTab === 'quizzes' && <QuizManager />}
           {activeTab === 'community' && <CommunityManager />}
+          {activeTab === 'challenges' && <ChallengeManager />}
           {activeTab === 'calendar' && <CalendarManager />}
           {activeTab === 'progress' && <ProgressManager />}
           {activeTab === 'classroom' && (

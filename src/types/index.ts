@@ -131,3 +131,59 @@ export interface UserStats {
   totalEvents: number;
   averageProgress: number;
 }
+
+export interface Challenge {
+  id: string;
+  type: '7day' | '30day';
+  title: string;
+  description: string;
+  startDate: Date;
+  endDate: Date;
+  isActive: boolean;
+  price: number; // 0 for free, amount for paid
+  paymentNumber?: string; // Bkash/Nagad number for 30-day challenge
+  createdAt: Date;
+}
+
+export interface ChallengeSubmission {
+  id: string;
+  challengeId: string;
+  challengeType: '7day' | '30day';
+  userId: string;
+  authorName: string;
+  authorAvatar?: string;
+  title: string;
+  description: string;
+  youtubeUrl: string;
+  videoId: string;
+  imageUrl?: string;
+  files?: FileAttachment[];
+  approved: boolean;
+  likes: string[];
+  likesCount: number;
+  commentsCount: number;
+  createdAt: Date;
+}
+
+export interface ChallengePayment {
+  id: string;
+  challengeId: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  paymentNumber: string;
+  transactionId: string;
+  amount: number;
+  status: 'pending' | 'approved' | 'rejected';
+  createdAt: Date;
+}
+
+export interface ChallengeComment {
+  id: string;
+  submissionId: string;
+  authorId: string;
+  authorName: string;
+  authorAvatar?: string;
+  content: string;
+  createdAt: Date;
+}

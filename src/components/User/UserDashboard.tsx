@@ -8,6 +8,7 @@ import { formatFileSize, getFileIcon } from '../../utils/fileUpload';
 import VideoPlayer from './VideoPlayer';
 import CommunitySection from './CommunitySection';
 import CalendarSection from './CalendarSection';
+import ChallengeSection from './ChallengeSection';
 import LeaderboardSection from './LeaderboardSection';
 import Navbar from '../Layout/Navbar';
 import { useAuth } from '../../contexts/AuthContext';
@@ -91,6 +92,15 @@ const UserDashboard: React.FC = () => {
       <div className="min-h-screen bg-gray-50">
         <Navbar />
         <CommunitySection />
+      </div>
+    );
+  }
+
+  if (activeSection === 'challenges') {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <ChallengeSection />
       </div>
     );
   }
@@ -243,6 +253,7 @@ const UserDashboard: React.FC = () => {
           {[
             { id: 'courses', label: 'কোর্স', icon: BookOpen },
             { id: 'community', label: 'কমিউনিটি', icon: MessageSquare },
+            { id: 'challenges', label: 'চ্যালেঞ্জ', icon: Trophy },
             { id: 'calendar', label: 'ক্যালেন্ডার', icon: Calendar },
             { id: 'leaderboard', label: 'লিডারবোর্ড', icon: Trophy },
           ].map((section) => {
@@ -296,6 +307,7 @@ const UserDashboard: React.FC = () => {
             {[
               { id: 'courses', label: 'কোর্স', icon: BookOpen },
               { id: 'community', label: 'কমিউনিটি', icon: MessageSquare },
+              { id: 'challenges', label: 'চ্যালেঞ্জ', icon: Trophy },
               { id: 'calendar', label: 'ক্যালেন্ডার', icon: Calendar },
               { id: 'leaderboard', label: 'লিডারবোর্ড', icon: Trophy },
             ].map((section) => {
