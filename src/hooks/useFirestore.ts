@@ -56,6 +56,7 @@ export const useFirestore = (collectionName: string, orderByField?: string, wher
             createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : (data.createdAt || new Date())
           };
         });
+        )
         setDocuments(docs);
         setLoading(false);
         setError(null);
