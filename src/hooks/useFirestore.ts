@@ -36,7 +36,7 @@ export const useFirestore = (collectionName: string, orderByField?: string, wher
     const unsubscribe = onSnapshot(
       q,
       (snapshot: QuerySnapshot<DocumentData>) => {
-        const docs = snapshot.docs.map(doc => ({
+        const docs = snapshot.docs.map(doc => {
           const data = doc.data();
           
           // Convert Firestore Timestamps to JavaScript Dates
@@ -56,7 +56,6 @@ export const useFirestore = (collectionName: string, orderByField?: string, wher
             createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : (data.createdAt || new Date())
           };
         });
-        )
         setDocuments(docs);
         setLoading(false);
         setError(null);
