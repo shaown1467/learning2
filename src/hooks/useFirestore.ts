@@ -10,7 +10,8 @@ import {
   doc,
   where,
   DocumentData,
-  QuerySnapshot 
+  QuerySnapshot,
+  Timestamp
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
 
@@ -36,10 +37,25 @@ export const useFirestore = (collectionName: string, orderByField?: string, wher
       q,
       (snapshot: QuerySnapshot<DocumentData>) => {
         const docs = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data(),
-          createdAt: doc.data().createdAt?.toDate?.() || new Date()
-        }));
+          const data = doc.data();
+          
+          // Convert Firestore Timestamps to JavaScript Dates
+          const convertedData = Object.keys(data).reduce((acc, key) => {
+            const value = data[key];
+            if (value instanceof Timestamp) {
+              acc[key] = value.toDate();
+            } else {
+              acc[key] = value;
+            }
+            return acc;
+          }, {} as any);
+          
+          return {
+            id: doc.id,
+            ...convertedData,
+            createdAt: data.createdAt instanceof Timestamp ? data.createdAt.toDate() : (data.createdAt || new Date())
+          };
+        });
         setDocuments(docs);
         setLoading(false);
         setError(null);
@@ -56,9 +72,20 @@ export const useFirestore = (collectionName: string, orderByField?: string, wher
 
   const addDocument = async (data: any) => {
     try {
+      // Convert JavaScript Dates to Firestore Timestamps
+      const convertedData = Object.keys(data).reduce((acc, key) => {
+        const value = data[key];
+        if (value instanceof Date) {
+          acc[key] = Timestamp.fromDate(value);
+        } else {
+          acc[key] = value;
+        }
+        return acc;
+      }, {} as any);
+      
       const docRef = await addDoc(collection(db, collectionName), {
-        ...data,
-        createdAt: new Date()
+        ...convertedData,
+        createdAt: Timestamp.fromDate(new Date())
       });
       return docRef.id;
     } catch (err: any) {
@@ -69,7 +96,18 @@ export const useFirestore = (collectionName: string, orderByField?: string, wher
 
   const updateDocument = async (id: string, data: any) => {
     try {
-      await updateDoc(doc(db, collectionName, id), data);
+      // Convert JavaScript Dates to Firestore Timestamps
+      const convertedData = Object.keys(data).reduce((acc, key) => {
+        const value = data[key];
+        if (value instanceof Date) {
+          acc[key] = Timestamp.fromDate(value);
+        } else {
+          acc[key] = value;
+        }
+        return acc;
+      }, {} as any);
+      
+      await updateDoc(doc(db, collectionName, id), convertedData);
     } catch (err: any) {
       setError(err.message);
       throw err;
