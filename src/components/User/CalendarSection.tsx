@@ -81,7 +81,7 @@ const CalendarSection: React.FC = () => {
   const selectedDateEvents = selectedDate ? getEventsForDate(selectedDate) : [];
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
+    <div className="max-w-6xl mx-auto px-4 py-8 pb-20 lg:pb-0">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">ক্যালেন্ডার</h1>
         <p className="text-gray-600">আসন্ন ইভেন্ট এবং ক্লাসের সময়সূচী দেখুন</p>

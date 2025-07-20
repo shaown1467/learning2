@@ -52,7 +52,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ video, onVideoComplete }) => 
         canAccess: true,
         summary: completionForm.summary,
         workLink: completionForm.workLink,
-        quizScore: undefined,
+        quizScore: null,
         quizPassed: false,
         quizAttempts: 0,
         submittedAt: new Date()
@@ -71,11 +71,32 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ video, onVideoComplete }) => 
         setShowQuizModal(true);
       } else {
         // No quiz, mark as completed immediately
-        await markVideoAsCompleted();
+        const updatedProgressData = {
+          ...progressData,
+          watched: true,
+          completedAt: new Date()
+        };
+        
+        if (userVideoProgress) {
+          await updateProgress(userVideoProgress.id, updatedProgressData);
+        } else {
+          const newProgressId = await addProgress(updatedProgressData);
+        }
+        
+        // Award points for video completion
+        if (currentUserProfile) {
+          await updateUserProfile(currentUserProfile.id, {
+            points: currentUserProfile.points + 5, // 5 points for completing video
+            completedVideos: currentUserProfile.completedVideos + 1
+          });
+        }
+        
+        onVideoComplete();
       }
       
       toast.success('ভিডিও সম্পূর্ণ করার তথ্য জমা দেওয়া হয়েছে!');
     } catch (error) {
+      console.error('Error submitting completion:', error);
       toast.error('সমস্যা হয়েছে!');
     }
   };

@@ -263,7 +263,7 @@ const ChallengeSection: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 pb-20 lg:pb-0">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Enhanced Header */}
         <div className="relative bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 rounded-3xl text-white p-8 mb-8 shadow-2xl overflow-hidden">

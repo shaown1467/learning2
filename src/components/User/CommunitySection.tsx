@@ -210,7 +210,7 @@ const CommunitySection: React.FC = () => {
     });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 pb-20 lg:pb-0">
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Enhanced Header with gradient and animations */}
         <div className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 rounded-3xl text-white p-8 mb-8 shadow-2xl overflow-hidden">
