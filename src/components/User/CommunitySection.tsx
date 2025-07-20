@@ -255,37 +255,37 @@ const CommunitySection: React.FC = () => {
             <div className="flex flex-wrap gap-4">
               <button
                 onClick={() => setSelectedCategory('all')}
-                className={`group px-8 py-4 rounded-2xl text-sm font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg ${
+              <div className="px-4 py-3 bg-gradient-to-r from-gray-50 to-blue-50 border-t border-gray-100">
                   selectedCategory === 'all'
-                    ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg scale-105'
+                  <div className="flex items-center space-x-6">
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md'
                 }`}
-              >
+                      className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 transform hover:scale-105 ${
                 <span className="flex items-center space-x-2">
-                  <span>সব পোস্ট</span>
-                  <span className="bg-white bg-opacity-20 px-2 py-1 rounded-full text-xs">
+                          ? 'text-red-600 bg-red-50 hover:bg-red-100 shadow-md' 
+                          : 'text-gray-600 hover:text-red-600 hover:bg-red-50 hover:shadow-md'
                     {posts.filter((p: Post) => p.approved).length}
                   </span>
-                </span>
-              </button>
-              {categories.map((category: Category) => {
+                      <Heart className={`h-5 w-5 ${isPostLiked(post) ? 'fill-current' : ''}`} />
+                      <span className="font-bold text-sm">{post.likesCount}</span>
+                      <span className="text-xs font-semibold">লাইক</span>
                 const categoryPostCount = posts.filter((p: Post) => p.approved && p.categoryId === category.id).length;
                 return (
                   <button
-                    key={category.id}
+                      className="flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 transform hover:scale-105 hover:shadow-md"
                     onClick={() => setSelectedCategory(category.id)}
-                    className={`group px-8 py-4 rounded-2xl text-sm font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-lg ${
-                      selectedCategory === category.id
-                        ? 'text-white shadow-lg scale-105'
+                      <MessageSquare className="h-5 w-5" />
+                      <span className="font-bold text-sm">{post.commentsCount}</span>
+                      <span className="text-xs font-semibold">মন্তব্য</span>
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-md'
-                    }`}
-                    style={{
-                      backgroundColor: selectedCategory === category.id ? category.color : undefined
+                    <button className="flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-600 hover:text-green-600 hover:bg-green-50 transition-all duration-300 transform hover:scale-105 hover:shadow-md">
+                      <Share2 className="h-5 w-5" />
+                      <span className="text-xs font-semibold">শেয়ার</span>
                     }}
                   >
-                    <span className="flex items-center space-x-2">
+                  <div className="text-xs text-gray-500 font-medium">
                       <span>{category.name}</span>
-                      <span className="bg-white bg-opacity-20 px-2 py-1 rounded-full text-xs">
+                      <span className="bg-gray-100 px-3 py-1 rounded-full">
                         {categoryPostCount}
                       </span>
                     </span>
@@ -315,21 +315,21 @@ const CommunitySection: React.FC = () => {
                             className="w-16 h-16 rounded-full object-cover ring-4 ring-blue-100 shadow-lg"
                           />
                         ) : (
-                          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center ring-4 ring-blue-100 shadow-lg">
+            <div key={post.id} className="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 transform hover:-translate-y-1 max-w-2xl mx-auto">
                             <span className="text-white font-bold text-xl">
-                              {post.authorName.charAt(0).toUpperCase()}
+              <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-blue-50">
                             </span>
-                          </div>
+                  <div className="flex items-center space-x-3">
                         )}
                         <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-400 rounded-full border-4 border-white shadow-lg"></div>
                       </div>
                       <div>
                         <h3 className="font-bold text-gray-900 text-xl">{post.authorName}</h3>
-                        <div className="flex items-center space-x-4 mt-1">
+                          className="w-12 h-12 rounded-full object-cover ring-2 ring-blue-100 shadow-md"
                           <span
                             className="px-4 py-2 rounded-full text-sm font-semibold text-white shadow-md"
-                            style={{ backgroundColor: getCategoryColor(post.categoryId) }}
-                          >
+                        <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center ring-2 ring-blue-100 shadow-md">
+                          <span className="text-white font-bold text-lg">
                             {getCategoryName(post.categoryId)}
                           </span>
                           <span className="text-sm text-gray-500 font-medium">{formatTimeAgo(post.createdAt)}</span>
@@ -422,26 +422,26 @@ const CommunitySection: React.FC = () => {
                           {post.likesCount} জন লাইক করেছেন
                         </span>
                       )}
-                    </div>
+                      <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white shadow-md"></div>
                   </div>
                 </div>
 
                 {/* Enhanced Comments Section */}
                 {showComments === post.id && (
                   <div className="border-t border-gray-100 bg-white">
-                    <div className="p-8">
-                      <div className="space-y-6 mb-8">
+                    <div className="p-4">
+                      <div className="space-y-4 mb-6">
                         {postComments.map((comment: Comment) => (
-                          <div key={comment.id} className="flex space-x-4">
+                          <div key={comment.id} className="flex space-x-3">
                             <div className="flex-shrink-0">
                               {comment.authorAvatar ? (
                                 <img
                                   src={comment.authorAvatar}
                                   alt={comment.authorName}
-                                  className="w-12 h-12 rounded-full object-cover ring-2 ring-gray-200"
+                                  className="w-10 h-10 rounded-full object-cover ring-2 ring-gray-200"
                                 />
                               ) : (
-                                <div className="w-12 h-12 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center">
+                                <div className="w-10 h-10 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center">
                                   <span className="text-white text-sm font-semibold">
                                     {comment.authorName.charAt(0).toUpperCase()}
                                   </span>
@@ -449,66 +449,66 @@ const CommunitySection: React.FC = () => {
                               )}
                             </div>
                             <div className="flex-1">
-                              <div className="bg-gradient-to-r from-gray-100 to-blue-50 rounded-2xl px-6 py-4 hover:from-blue-50 hover:to-purple-50 transition-all duration-300 shadow-sm hover:shadow-md">
-                                <div className="flex items-center space-x-3 mb-2">
-                                  <p className="font-bold text-sm text-gray-900">{comment.authorName}</p>
+                              <div className="bg-gradient-to-r from-gray-100 to-blue-50 rounded-xl px-4 py-3 hover:from-blue-50 hover:to-purple-50 transition-all duration-300 shadow-sm hover:shadow-md">
+                                <div className="flex items-center space-x-2 mb-2">
+                                  <p className="font-bold text-xs text-gray-900">{comment.authorName}</p>
                                   <span className="text-xs text-gray-500 bg-white px-2 py-1 rounded-full">
-                                    {formatTimeAgo(comment.createdAt)}
-                                  </span>
+                      <h3 className="font-bold text-gray-900 text-lg">{post.authorName}</h3>
+                      <div className="flex items-center space-x-3 mt-1">
                                 </div>
-                                <p className="text-gray-700 leading-relaxed">{comment.content}</p>
+                                <p className="text-gray-700 leading-relaxed text-sm">{comment.content}</p>
                               </div>
                             </div>
                           </div>
                         ))}
-                        
+                        <span className="text-xs text-gray-500 font-medium">{formatTimeAgo(post.createdAt)}</span>
                         {postComments.length === 0 && (
-                          <div className="text-center py-12">
-                            <MessageSquare className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                            <p className="text-gray-500 text-lg">এখনো কোন মন্তব্য নেই। প্রথম মন্তব্য করুন!</p>
+                          <div className="text-center py-8">
+                            <MessageSquare className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                            <p className="text-gray-500 text-sm">এখনো কোন মন্তব্য নেই। প্রথম মন্তব্য করুন!</p>
                           </div>
                         )}
                       </div>
                       
                       {/* Enhanced Comment Input */}
-                      <div className="flex space-x-4">
+                      <div className="flex space-x-3">
                         <div className="flex-shrink-0">
                           {currentUserProfile?.avatar ? (
                             <img
                               src={currentUserProfile.avatar}
                               alt="Your avatar"
-                              className="w-12 h-12 rounded-full object-cover ring-2 ring-blue-200"
+                              className="w-10 h-10 rounded-full object-cover ring-2 ring-blue-200"
                             />
                           ) : (
-                            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
                               <span className="text-white text-sm font-semibold">
                                 {currentUser?.email?.charAt(0).toUpperCase()}
                               </span>
                             </div>
                           )}
                         </div>
-                        <div className="flex-1 flex space-x-4">
+                        <div className="flex-1 flex space-x-3">
                           <input
                             type="text"
                             value={commentText}
                             onChange={(e) => setCommentText(e.target.value)}
                             placeholder="একটি মন্তব্য লিখুন..."
-                            className="flex-1 px-6 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white shadow-sm hover:shadow-md"
+                            className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 bg-white shadow-sm hover:shadow-md text-sm"
                             onKeyPress={(e) => {
                               if (e.key === 'Enter' && commentText.trim()) {
                                 handleAddComment(post.id);
                               }
                             }}
-                          />
-                          <button
-                            onClick={() => handleAddComment(post.id)}
+              <div className="p-4">
+                <h2 className="text-xl font-bold text-gray-900 mb-3 leading-tight">{post.title}</h2>
+                <p className="text-gray-700 mb-4 leading-relaxed text-sm">{post.content}</p>
                             disabled={!commentText.trim()}
-                            className="px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-2xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 shadow-lg hover:shadow-xl"
-                          >
-                            <Send className="h-6 w-6" />
+                            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 shadow-md hover:shadow-lg"
+                  <div className="mb-4">
+                            <Send className="h-5 w-5" />
                           </button>
                         </div>
-                      </div>
+                      className="w-full h-48 object-cover rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
                     </div>
                   </div>
                 )}
@@ -612,22 +612,22 @@ const CommunitySection: React.FC = () => {
                   <label className="block text-sm font-bold text-gray-700 mb-3">
                     ফাইল আপলোড করুন (ঐচ্ছিক)
                   </label>
-                  <input
-                    type="file"
-                    multiple
+                  <div className="mb-4">
+                    <h4 className="font-bold text-gray-900 mb-3 flex items-center text-sm">
+                      <File className="h-4 w-4 mr-2 text-blue-600" />
                     onChange={handleFileUpload}
                     className="w-full px-6 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                    disabled={uploading}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   />
                   {postForm.files.length > 0 && (
                     <div className="mt-6 space-y-3">
                       {postForm.files.map((file) => (
                         <div key={file.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
-                          <div className="flex items-center space-x-4">
+                          className="flex items-center space-x-3 p-3 bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl hover:from-blue-50 hover:to-purple-50 transition-all duration-300 border border-gray-200 hover:border-blue-300 hover:shadow-md group"
                             <span className="text-3xl">{getFileIcon(file.type)}</span>
-                            <div>
+                          <span className="text-2xl">{getFileIcon(file.type)}</span>
                               <p className="text-sm font-semibold">{file.name}</p>
-                              <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
+                            <p className="text-xs font-semibold text-gray-900 truncate group-hover:text-blue-700">{file.name}</p>
                             </div>
                           </div>
                           <button
@@ -636,7 +636,7 @@ const CommunitySection: React.FC = () => {
                             className="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 transition-colors text-xl"
                           >
                             ×
-                          </button>
+                          <Download className="h-4 w-4 text-gray-400 group-hover:text-blue-600 transition-colors" />
                         </div>
                       ))}
                     </div>

@@ -384,10 +384,10 @@ const ChallengeSection: React.FC = () => {
             const submissionComments = getSubmissionComments(submission.id);
             
             return (
-              <div key={submission.id} className="group bg-white rounded-3xl shadow-xl hover:shadow-2xl transition-all duration-500 overflow-hidden border border-gray-100 transform hover:-translate-y-2">
+              <div key={submission.id} className="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 transform hover:-translate-y-1 max-w-2xl mx-auto">
                 {/* Rank Badge */}
                 {index < 3 && (
-                  <div className={`absolute top-4 left-4 z-10 px-4 py-2 rounded-full text-white font-bold shadow-lg ${
+                  <div className={`absolute top-3 left-3 z-10 px-3 py-1 rounded-full text-white font-bold shadow-md text-sm ${
                     index === 0 ? 'bg-gradient-to-r from-yellow-400 to-yellow-600' :
                     index === 1 ? 'bg-gradient-to-r from-gray-300 to-gray-500' :
                     'bg-gradient-to-r from-orange-400 to-orange-600'
@@ -397,29 +397,29 @@ const ChallengeSection: React.FC = () => {
                 )}
 
                 {/* Submission Header */}
-                <div className="p-8 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-purple-50">
+                <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-purple-50">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-3">
                       <div className="relative">
                         {submission.authorAvatar ? (
                           <img
                             src={submission.authorAvatar}
                             alt={submission.authorName}
-                            className="w-16 h-16 rounded-full object-cover ring-4 ring-purple-100 shadow-lg"
+                            className="w-12 h-12 rounded-full object-cover ring-2 ring-purple-100 shadow-md"
                           />
                         ) : (
-                          <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center ring-4 ring-purple-100 shadow-lg">
-                            <span className="text-white font-bold text-xl">
+                          <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center ring-2 ring-purple-100 shadow-md">
+                            <span className="text-white font-bold text-lg">
                               {submission.authorName.charAt(0).toUpperCase()}
                             </span>
                           </div>
                         )}
-                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-400 rounded-full border-4 border-white shadow-lg"></div>
+                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white shadow-md"></div>
                       </div>
                       <div>
-                        <h3 className="font-bold text-gray-900 text-xl">{submission.authorName}</h3>
-                        <div className="flex items-center space-x-4 mt-1">
-                          <span className="text-sm text-gray-500 font-medium">{formatTimeAgo(submission.createdAt)}</span>
+                        <h3 className="font-bold text-gray-900 text-lg">{submission.authorName}</h3>
+                        <div className="flex items-center space-x-3 mt-1">
+                          <span className="text-xs text-gray-500 font-medium">{formatTimeAgo(submission.createdAt)}</span>
                           <span className={`px-3 py-1 rounded-full text-xs font-semibold text-white ${
                             activeTab === '7day' ? 'bg-purple-500' : 'bg-orange-500'
                           }`}>
@@ -432,59 +432,59 @@ const ChallengeSection: React.FC = () => {
                 </div>
 
                 {/* Submission Content */}
-                <div className="p-8">
-                  <h2 className="text-3xl font-bold text-gray-900 mb-6 leading-tight">{submission.title}</h2>
-                  <p className="text-gray-700 mb-8 leading-relaxed text-lg">{submission.description}</p>
+                <div className="p-4">
+                  <h2 className="text-xl font-bold text-gray-900 mb-3 leading-tight">{submission.title}</h2>
+                  <p className="text-gray-700 mb-4 leading-relaxed text-sm">{submission.description}</p>
                   
                   {/* Video Thumbnail */}
-                  <div className="mb-8">
-                    <div className="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
+                  <div className="mb-4">
+                    <div className="relative rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
                       <img
                         src={getThumbnailUrl(submission.videoId, 'maxres')}
                         alt={submission.title}
-                        className="w-full h-64 object-cover"
+                        className="w-full h-48 object-cover"
                       />
                       <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
                         <button
                           onClick={() => openPlayer(submission.videoId, submission.title)}
-                          className="bg-white text-gray-900 p-4 rounded-full hover:bg-gray-100 transition-colors transform hover:scale-110"
+                          className="bg-white text-gray-900 p-3 rounded-full hover:bg-gray-100 transition-colors transform hover:scale-110"
                         >
-                          <Play className="h-8 w-8" />
+                          <Play className="h-6 w-6" />
                         </button>
                       </div>
                     </div>
                   </div>
                   
                   {submission.imageUrl && (
-                    <div className="mb-8">
+                    <div className="mb-4">
                       <img
                         src={submission.imageUrl}
                         alt="Project"
-                        className="w-full max-w-4xl h-96 object-cover rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-300"
+                        className="w-full h-48 object-cover rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
                       />
                     </div>
                   )}
                   
                   {submission.files && submission.files.length > 0 && (
-                    <div className="mb-8">
-                      <h4 className="font-bold text-gray-900 mb-4 flex items-center text-lg">
-                        <File className="h-6 w-6 mr-3 text-purple-600" />
+                    <div className="mb-4">
+                      <h4 className="font-bold text-gray-900 mb-3 flex items-center text-sm">
+                        <File className="h-4 w-4 mr-2 text-purple-600" />
                         সংযুক্ত ফাইল ({submission.files.length}টি)
                       </h4>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {submission.files.map((file, index) => (
                           <a
                             key={index}
                             href={file.url}
                             download={file.name}
-                            className="flex items-center space-x-4 p-6 bg-gradient-to-r from-gray-50 to-purple-50 rounded-2xl hover:from-purple-50 hover:to-pink-50 transition-all duration-300 border border-gray-200 hover:border-purple-300 hover:shadow-lg group transform hover:scale-105"
+                            className="flex items-center space-x-3 p-3 bg-gradient-to-r from-gray-50 to-purple-50 rounded-xl hover:from-purple-50 hover:to-pink-50 transition-all duration-300 border border-gray-200 hover:border-purple-300 hover:shadow-md group"
                           >
-                            <span className="text-4xl">{getFileIcon(file.type)}</span>
+                            <span className="text-2xl">{getFileIcon(file.type)}</span>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-semibold text-gray-900 truncate group-hover:text-purple-700">{file.name}</p>
+                              <p className="text-xs font-semibold text-gray-900 truncate group-hover:text-purple-700">{file.name}</p>
                               <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
                             </div>
-                            <Download className="h-6 w-6 text-gray-400 group-hover:text-purple-600 transition-colors" />
+                            <Download className="h-4 w-4 text-gray-400 group-hover:text-purple-600 transition-colors" />
                           </a>
                         ))}
                       </div>
@@ -493,33 +493,33 @@ const ChallengeSection: React.FC = () => {
                 </div>
 
                 {/* Submission Actions */}
-                <div className="px-8 py-6 bg-gradient-to-r from-gray-50 to-purple-50 border-t border-gray-100">
+                <div className="px-4 py-3 bg-gradient-to-r from-gray-50 to-purple-50 border-t border-gray-100">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-8">
+                    <div className="flex items-center space-x-6">
                       <button 
                         onClick={() => toggleLike(submission.id)}
-                        className={`flex items-center space-x-3 px-6 py-3 rounded-2xl transition-all duration-300 transform hover:scale-110 ${
+                        className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 transform hover:scale-105 ${
                           isSubmissionLiked(submission) 
-                            ? 'text-red-600 bg-red-50 hover:bg-red-100 shadow-lg' 
-                            : 'text-gray-600 hover:text-red-600 hover:bg-red-50 hover:shadow-lg'
+                            ? 'text-red-600 bg-red-50 hover:bg-red-100 shadow-md' 
+                            : 'text-gray-600 hover:text-red-600 hover:bg-red-50 hover:shadow-md'
                         }`}
                       >
-                        <Heart className={`h-6 w-6 ${isSubmissionLiked(submission) ? 'fill-current' : ''}`} />
-                        <span className="font-bold text-lg">{submission.likesCount}</span>
-                        <span className="text-sm font-semibold">লাইক</span>
+                        <Heart className={`h-5 w-5 ${isSubmissionLiked(submission) ? 'fill-current' : ''}`} />
+                        <span className="font-bold text-sm">{submission.likesCount}</span>
+                        <span className="text-xs font-semibold">লাইক</span>
                       </button>
                       <button
                         onClick={() => setShowComments(showComments === submission.id ? null : submission.id)}
-                        className="flex items-center space-x-3 px-6 py-3 rounded-2xl text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 transform hover:scale-110 hover:shadow-lg"
+                        className="flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 transform hover:scale-105 hover:shadow-md"
                       >
-                        <MessageSquare className="h-6 w-6" />
-                        <span className="font-bold text-lg">{submission.commentsCount}</span>
-                        <span className="text-sm font-semibold">মন্তব্য</span>
+                        <MessageSquare className="h-5 w-5" />
+                        <span className="font-bold text-sm">{submission.commentsCount}</span>
+                        <span className="text-xs font-semibold">মন্তব্য</span>
                       </button>
                     </div>
-                    <div className="text-sm text-gray-500 font-medium">
+                    <div className="text-xs text-gray-500 font-medium">
                       {submission.likesCount > 0 && (
-                        <span className="bg-gray-100 px-4 py-2 rounded-full">
+                        <span className="bg-gray-100 px-3 py-1 rounded-full">
                           {submission.likesCount} জন লাইক করেছেন
                         </span>
                       )}
@@ -530,19 +530,19 @@ const ChallengeSection: React.FC = () => {
                 {/* Comments Section */}
                 {showComments === submission.id && (
                   <div className="border-t border-gray-100 bg-white">
-                    <div className="p-8">
-                      <div className="space-y-6 mb-8">
+                    <div className="p-4">
+                      <div className="space-y-4 mb-6">
                         {submissionComments.map((comment: ChallengeComment) => (
-                          <div key={comment.id} className="flex space-x-4">
+                          <div key={comment.id} className="flex space-x-3">
                             <div className="flex-shrink-0">
                               {comment.authorAvatar ? (
                                 <img
                                   src={comment.authorAvatar}
                                   alt={comment.authorName}
-                                  className="w-12 h-12 rounded-full object-cover ring-2 ring-gray-200"
+                                  className="w-10 h-10 rounded-full object-cover ring-2 ring-gray-200"
                                 />
                               ) : (
-                                <div className="w-12 h-12 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center">
+                                <div className="w-10 h-10 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center">
                                   <span className="text-white text-sm font-semibold">
                                     {comment.authorName.charAt(0).toUpperCase()}
                                   </span>
@@ -550,51 +550,51 @@ const ChallengeSection: React.FC = () => {
                               )}
                             </div>
                             <div className="flex-1">
-                              <div className="bg-gradient-to-r from-gray-100 to-purple-50 rounded-2xl px-6 py-4 hover:from-purple-50 hover:to-pink-50 transition-all duration-300 shadow-sm hover:shadow-md">
-                                <div className="flex items-center space-x-3 mb-2">
-                                  <p className="font-bold text-sm text-gray-900">{comment.authorName}</p>
+                              <div className="bg-gradient-to-r from-gray-100 to-purple-50 rounded-xl px-4 py-3 hover:from-purple-50 hover:to-pink-50 transition-all duration-300 shadow-sm hover:shadow-md">
+                                <div className="flex items-center space-x-2 mb-2">
+                                  <p className="font-bold text-xs text-gray-900">{comment.authorName}</p>
                                   <span className="text-xs text-gray-500 bg-white px-2 py-1 rounded-full">
                                     {formatTimeAgo(comment.createdAt)}
                                   </span>
                                 </div>
-                                <p className="text-gray-700 leading-relaxed">{comment.content}</p>
+                                <p className="text-gray-700 leading-relaxed text-sm">{comment.content}</p>
                               </div>
                             </div>
                           </div>
                         ))}
                         
                         {submissionComments.length === 0 && (
-                          <div className="text-center py-12">
-                            <MessageSquare className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                            <p className="text-gray-500 text-lg">এখনো কোন মন্তব্য নেই। প্রথম মন্তব্য করুন!</p>
+                          <div className="text-center py-8">
+                            <MessageSquare className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                            <p className="text-gray-500 text-sm">এখনো কোন মন্তব্য নেই। প্রথম মন্তব্য করুন!</p>
                           </div>
                         )}
                       </div>
                       
                       {/* Comment Input */}
-                      <div className="flex space-x-4">
+                      <div className="flex space-x-3">
                         <div className="flex-shrink-0">
                           {currentUserProfile?.avatar ? (
                             <img
                               src={currentUserProfile.avatar}
                               alt="Your avatar"
-                              className="w-12 h-12 rounded-full object-cover ring-2 ring-purple-200"
+                              className="w-10 h-10 rounded-full object-cover ring-2 ring-purple-200"
                             />
                           ) : (
-                            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center">
+                            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center">
                               <span className="text-white text-sm font-semibold">
                                 {currentUser?.email?.charAt(0).toUpperCase()}
                               </span>
                             </div>
                           )}
                         </div>
-                        <div className="flex-1 flex space-x-4">
+                        <div className="flex-1 flex space-x-3">
                           <input
                             type="text"
                             value={commentText}
                             onChange={(e) => setCommentText(e.target.value)}
                             placeholder="একটি মন্তব্য লিখুন..."
-                            className="flex-1 px-6 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-white shadow-sm hover:shadow-md"
+                            className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-white shadow-sm hover:shadow-md text-sm"
                             onKeyPress={(e) => {
                               if (e.key === 'Enter' && commentText.trim()) {
                                 handleAddComment(submission.id);
@@ -604,7 +604,7 @@ const ChallengeSection: React.FC = () => {
                           <button
                             onClick={() => handleAddComment(submission.id)}
                             disabled={!commentText.trim()}
-                            className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-2xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 shadow-lg hover:shadow-xl"
+                            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 shadow-md hover:shadow-lg"
                           >
                             পাঠান
                           </button>
