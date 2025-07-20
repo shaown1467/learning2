@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Users, Video, BookOpen, BarChart3, Settings, PlayCircle, MessageSquare, Calendar, HelpCircle } from 'lucide-react';
+import { Users, Video, BookOpen, BarChart3, Settings, PlayCircle, MessageSquare, Calendar, HelpCircle, Trophy } from 'lucide-react';
 import { useStats } from '../../hooks/useStats';
 import TopicManager from './TopicManager';
 import VideoManager from './VideoManager';
