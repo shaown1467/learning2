@@ -33,7 +33,6 @@ interface Comment {
 }
 
 export const CommunitySection: React.FC = () => {
-  const [posts, setPosts] = useState<Post[]>([]);
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [newPost, setNewPost] = useState({
     title: '',
@@ -45,28 +44,17 @@ export const CommunitySection: React.FC = () => {
   const [commentTexts, setCommentTexts] = useState<{ [key: string]: string }>({});
 
   const { user } = useAuth();
-  const { addDocument, getDocuments, updateDocument } = useFirestore();
+  const { documents: allPosts, addDocument, updateDocument } = useFirestore('communityPosts');
 
-  useEffect(() => {
-    loadPosts();
-  }, []);
-
-  const loadPosts = async () => {
-    try {
-      const postsData = await getDocuments('communityPosts');
-      const approvedPosts = postsData
-        .filter((post: any) => post.approved)
-        .sort((a: any, b: any) => {
-          const aLikes = a.likes?.length || 0;
-          const bLikes = b.likes?.length || 0;
-          if (aLikes !== bLikes) return bLikes - aLikes;
-          return b.createdAt?.seconds - a.createdAt?.seconds;
-        });
-      setPosts(approvedPosts);
-    } catch (error) {
-      console.error('Error loading posts:', error);
-    }
-  };
+  // Filter and sort posts
+  const posts = allPosts
+    .filter((post: any) => post.approved)
+    .sort((a: any, b: any) => {
+      const aLikes = a.likes?.length || 0;
+      const bLikes = b.likes?.length || 0;
+      if (aLikes !== bLikes) return bLikes - aLikes;
+      return b.createdAt?.seconds - a.createdAt?.seconds;
+    });
 
   const handleCreatePost = async () => {
     if (!user || !newPost.title.trim() || !newPost.description.trim()) return;
@@ -100,7 +88,7 @@ export const CommunitySection: React.FC = () => {
         approved: false
       };
 
-      await addDocument('communityPosts', postData);
+      await addDocument(postData);
       setNewPost({ title: '', description: '', youtubeUrl: '', file: null });
       setShowCreatePost(false);
       alert('পোস্ট সফলভাবে জমা দেওয়া হয়েছে! অ্যাডমিন অনুমোদনের পর এটি প্রদর্শিত হবে।');
@@ -125,13 +113,7 @@ export const CommunitySection: React.FC = () => {
         ? likes.filter(id => id !== user.uid)
         : [...likes, user.uid];
 
-      await updateDocument('communityPosts', postId, { likes: updatedLikes });
-      
-      setPosts(posts.map(p => 
-        p.id === postId 
-          ? { ...p, likes: updatedLikes }
-          : p
-      ));
+      await updateDocument(postId, { likes: updatedLikes });
     } catch (error) {
       console.error('Error updating like:', error);
     }
@@ -154,13 +136,7 @@ export const CommunitySection: React.FC = () => {
       };
 
       const updatedComments = [...(post.comments || []), newComment];
-      await updateDocument('communityPosts', postId, { comments: updatedComments });
-      
-      setPosts(posts.map(p => 
-        p.id === postId 
-          ? { ...p, comments: updatedComments }
-          : p
-      ));
+      await updateDocument(postId, { comments: updatedComments });
 
       setCommentTexts({ ...commentTexts, [postId]: '' });
     } catch (error) {
