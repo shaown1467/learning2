@@ -27,26 +27,37 @@ const UserDashboard: React.FC = () => {
   const handleVideoSelect = async (video: Video) => {
     if (!currentUser) return;
     
-    // Check if user can access this video
+    // Check if user can access this video based on previous video completion
+    const topicVideos = getTopicVideos(video.topicId).sort((a, b) => a.order - b.order);
+    const videoIndex = topicVideos.findIndex(v => v.id === video.id);
+    
+    // Check if previous videos are completed
+    let canAccess = videoIndex === 0; // First video is always accessible
+    
+    if (videoIndex > 0) {
+      for (let i = 0; i < videoIndex; i++) {
+        const prevVideo = topicVideos[i];
+        const prevProgress = userProgress.find((progress: UserProgress) => 
+          progress.userId === currentUser.uid && progress.videoId === prevVideo.id
+        );
+        if (!prevProgress || !prevProgress.watched) {
+          canAccess = false;
+          break;
+        }
+      }
+    }
+    
+    if (!canAccess) {
+      toast.error('আগের ভিডিও সম্পূর্ণ করুন!');
+      return;
+    }
+    
+    // Check if user progress exists, create if not
     const userVideoProgress = userProgress.find((progress: UserProgress) => 
       progress.userId === currentUser.uid && progress.videoId === video.id
     );
     
-    // If no progress exists, create initial progress
     if (!userVideoProgress) {
-      const topicVideos = getTopicVideos(video.topicId).sort((a, b) => a.order - b.order);
-      const videoIndex = topicVideos.findIndex(v => v.id === video.id);
-      
-      // Check if previous videos are completed
-      let canAccess = videoIndex === 0; // First video is always accessible
-      
-      if (videoIndex > 0) {
-        const previousVideo = topicVideos[videoIndex - 1];
-        const previousProgress = userProgress.find((progress: UserProgress) => 
-          progress.userId === currentUser.uid && progress.videoId === previousVideo.id
-        );
-        canAccess = previousProgress?.watched || false;
-      }
       
       try {
         await addProgress({

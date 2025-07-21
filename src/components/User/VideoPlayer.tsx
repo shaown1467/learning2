@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CheckCircle, Award, Play, Lock, FileText, ExternalLink } from 'lucide-react';
 import { useFirestore } from '../../hooks/useFirestore';
 import { useAuth } from '../../contexts/AuthContext';
-import { Video, Quiz, UserProgress, UserProfile } from '../../types';
+import { Video, Quiz, UserProgress, UserProfile, Topic } from '../../types';
 import YouTubePlayer from '../Common/YouTubePlayer';
 import toast from 'react-hot-toast';
 
@@ -14,6 +14,8 @@ interface VideoPlayerProps {
 const VideoPlayer: React.FC<VideoPlayerProps> = ({ video, onVideoComplete }) => {
   const { currentUser } = useAuth();
   const { documents: quizzes } = useFirestore('quizzes');
+  const { documents: videos } = useFirestore('videos', 'order');
+  const { documents: topics } = useFirestore('topics', 'order');
   const { documents: userProgress, addDocument: addProgress, updateDocument: updateProgress } = useFirestore('userProgress');
   const { documents: userProfiles, updateDocument: updateUserProfile } = useFirestore('userProfiles');
   const [isPlayerOpen, setIsPlayerOpen] = useState(false);
@@ -32,7 +34,35 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ video, onVideoComplete }) => 
     progress.userId === currentUser?.uid && progress.videoId === video.id
   );
 
-  const canAccessVideo = userVideoProgress?.canAccess !== false;
+  // Check if user can access this video based on previous video completion
+  const canAccessVideo = () => {
+    if (!currentUser) return false;
+    
+    // Get all videos in this topic, sorted by order
+    const topicVideos = videos
+      .filter((v: Video) => v.topicId === video.topicId)
+      .sort((a: Video, b: Video) => a.order - b.order);
+    
+    const currentVideoIndex = topicVideos.findIndex((v: Video) => v.id === video.id);
+    
+    // First video is always accessible
+    if (currentVideoIndex === 0) return true;
+    
+    // Check if all previous videos are completed
+    for (let i = 0; i < currentVideoIndex; i++) {
+      const prevVideo = topicVideos[i];
+      const prevProgress = userProgress.find((p: UserProgress) => 
+        p.userId === currentUser.uid && p.videoId === prevVideo.id
+      );
+      
+      if (!prevProgress || !prevProgress.watched) {
+        return false;
+      }
+    }
+    
+    return true;
+  };
+
   const isVideoCompleted = userVideoProgress?.watched || false;
 
   const handleCompleteVideo = () => {
@@ -89,6 +119,73 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ video, onVideoComplete }) => 
             points: currentUserProfile.points + 5, // 5 points for completing video
             completedVideos: currentUserProfile.completedVideos + 1
           });
+          
+          // Update access for next videos in the topic
+          const topicVideos = videos
+            .filter((v: Video) => v.topicId === video.topicId)
+            .sort((a: Video, b: Video) => a.order - b.order);
+          
+          const currentVideoIndex = topicVideos.findIndex((v: Video) => v.id === video.id);
+          
+          // Enable access to next video if exists
+          if (currentVideoIndex < topicVideos.length - 1) {
+            const nextVideo = topicVideos[currentVideoIndex + 1];
+            const nextProgress = userProgress.find((p: UserProgress) => 
+              p.userId === currentUser.uid && p.videoId === nextVideo.id
+            );
+            
+            if (nextProgress) {
+              await updateProgress(nextProgress.id, {
+                ...nextProgress,
+                canAccess: true
+              });
+            } else {
+              await addProgress({
+                userId: currentUser.uid,
+                videoId: nextVideo.id,
+                watched: false,
+                canAccess: true,
+                summary: '',
+                workLink: '',
+                quizPassed: false,
+                quizAttempts: 0
+              });
+            }
+          }
+          
+        }
+        
+        // Update access for next videos in the topic
+        const topicVideos = videos
+          .filter((v: Video) => v.topicId === video.topicId)
+          .sort((a: Video, b: Video) => a.order - b.order);
+        
+        const currentVideoIndex = topicVideos.findIndex((v: Video) => v.id === video.id);
+        
+        // Enable access to next video if exists
+        if (currentVideoIndex < topicVideos.length - 1) {
+          const nextVideo = topicVideos[currentVideoIndex + 1];
+          const nextProgress = userProgress.find((p: UserProgress) => 
+            p.userId === currentUser.uid && p.videoId === nextVideo.id
+          );
+          
+          if (nextProgress) {
+            await updateProgress(nextProgress.id, {
+              ...nextProgress,
+              canAccess: true
+            });
+          } else {
+            await addProgress({
+              userId: currentUser.uid,
+              videoId: nextVideo.id,
+              watched: false,
+              canAccess: true,
+              summary: '',
+              workLink: '',
+              quizPassed: false,
+              quizAttempts: 0
+            });
+          }
         }
         
         onVideoComplete();
@@ -179,7 +276,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ video, onVideoComplete }) => 
     setQuizScore(null);
   };
 
-  if (!canAccessVideo) {
+  if (!canAccessVideo()) {
     return (
       <div className="bg-white rounded-lg shadow-md p-8 text-center">
         <Lock className="h-16 w-16 text-gray-400 mx-auto mb-4" />

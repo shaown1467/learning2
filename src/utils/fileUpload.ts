@@ -1,5 +1,6 @@
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { storage } from '../config/firebase';
+import toast from 'react-hot-toast';
 
 export const uploadFile = async (file: File, path: string): Promise<string> => {
   try {
@@ -9,7 +10,8 @@ export const uploadFile = async (file: File, path: string): Promise<string> => {
     return downloadURL;
   } catch (error) {
     console.error('File upload error:', error);
-    throw new Error('ফাইল আপলোড করতে সমস্যা হয়েছে');
+    toast.error('ফাইল আপলোড করতে সমস্যা হয়েছে');
+    throw error;
   }
 };
 
