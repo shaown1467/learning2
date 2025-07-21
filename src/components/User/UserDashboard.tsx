@@ -6,7 +6,7 @@ import { Topic, Video, UserProgress } from '../../types';
 import { getThumbnailUrl } from '../../utils/youtube';
 import { formatFileSize, getFileIcon } from '../../utils/fileUpload';
 import VideoPlayer from './VideoPlayer';
-import CommunitySection from './CommunitySection';
+import { CommunitySection } from './CommunitySection';
 import CalendarSection from './CalendarSection';
 import ChallengeSection from './ChallengeSection';
 import LeaderboardSection from './LeaderboardSection';
