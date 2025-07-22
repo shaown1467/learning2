@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { Heart, MessageCircle, Share2, Upload, X, Play, Download, FileText, Image as ImageIcon, Camera } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Upload, X, Play, Download, FileText, Image as ImageIcon, Camera, Plus } from 'lucide-react';
 import { useFirestore } from '../../hooks/useFirestore';
 import { useAuth } from '../../contexts/AuthContext';
 import { uploadFile } from '../../utils/fileUpload';
 import { extractVideoId } from '../../utils/youtube';
 import { Post, Comment, Category, UserProfile } from '../../types';
+import toast from 'react-hot-toast';
 
 export const CommunitySection: React.FC = () => {
   const [showCreatePost, setShowCreatePost] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [newPost, setNewPost] = useState({
     title: '',
     content: '',
@@ -30,6 +32,7 @@ export const CommunitySection: React.FC = () => {
   // Filter approved posts and sort by likes and creation date
   const approvedPosts = posts
     .filter((post: Post) => post.approved)
+    .filter((post: Post) => selectedCategory === 'all' || post.categoryId === selectedCategory)
     .sort((a: Post, b: Post) => {
       // First sort by pinned posts
       if (a.pinned && !b.pinned) return -1;
@@ -255,22 +258,334 @@ export const CommunitySection: React.FC = () => {
     );
   };
 
+  const getCategoryPostCount = (categoryId: string) => {
+    return posts.filter((post: Post) => post.approved && post.categoryId === categoryId).length;
+  };
+
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8 pb-20 lg:pb-0">
+    <div className="max-w-7xl mx-auto px-4 py-8 pb-20 lg:pb-0">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">কমিউনিটি</h1>
         <p className="text-gray-600">সবার সাথে আপনার অভিজ্ঞতা শেয়ার করুন</p>
       </div>
 
-      {/* Create Post Button */}
-      <div className="mb-8">
-        <button
-          onClick={() => setShowCreatePost(true)}
-          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-4 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg"
-        >
-          <Upload className="h-5 w-5" />
-          <span>নতুন পোস্ট তৈরি করুন</span>
-        </button>
+      {/* Mobile Category Filter */}
+      <div className="lg:hidden mb-6">
+        <div className="bg-white rounded-xl shadow-md p-4">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-gray-900">টপিক ফিল্টার</h3>
+            <button
+              onClick={() => setShowCreatePost(true)}
+              className="bg-blue-600 text-white p-2 rounded-full hover:bg-blue-700 transition-colors"
+            >
+              <Plus className="h-5 w-5" />
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setSelectedCategory('all')}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                selectedCategory === 'all'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              সব ({posts.filter((p: Post) => p.approved).length})
+            </button>
+            {categories.map((category: Category) => {
+              const postCount = getCategoryPostCount(category.id);
+              return (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.id)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                    selectedCategory === category.id
+                      ? 'text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                  style={{
+                    backgroundColor: selectedCategory === category.id ? category.color : undefined
+                  }}
+                >
+                  {category.name} ({postCount})
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        {/* Posts Section */}
+        <div className="lg:col-span-3">
+          {/* Desktop Create Post Button */}
+          <div className="hidden lg:block mb-8">
+            <div className="bg-white rounded-xl shadow-md p-4">
+              <div className="flex items-center space-x-4">
+                {currentUserProfile?.avatar ? (
+                  <img
+                    src={currentUserProfile.avatar}
+                    alt="Your avatar"
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                    <span className="text-white font-semibold">
+                      {currentUser?.email?.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                )}
+                <button
+                  onClick={() => setShowCreatePost(true)}
+                  className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-600 px-4 py-3 rounded-full text-left transition-colors"
+                >
+                  আপনার মনে কি আছে?
+                </button>
+                <button
+                  onClick={() => setShowCreatePost(true)}
+                  className="bg-blue-600 text-white p-3 rounded-full hover:bg-blue-700 transition-colors"
+                >
+                  <Plus className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Posts */}
+          <div className="space-y-6">
+            {approvedPosts.map((post: Post) => {
+              const postComments = getPostComments(post.id);
+              
+              return (
+                <div key={post.id} className="bg-white rounded-xl shadow-md border border-gray-100 p-6 hover:shadow-lg transition-shadow">
+                  {/* Post Header */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                      {post.authorAvatar ? (
+                        <img
+                          src={post.authorAvatar}
+                          alt={post.authorName}
+                          className="w-10 h-10 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                          <span className="text-white font-semibold text-sm">
+                            {post.authorName.charAt(0).toUpperCase()}
+                          </span>
+                        </div>
+                      )}
+                      <div>
+                        <h3 className="font-semibold text-gray-900">{post.authorName}</h3>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-xs text-gray-500">
+                            {formatTimeAgo(new Date(post.createdAt))}
+                          </span>
+                          <span 
+                            className="px-2 py-1 rounded-full text-xs font-medium text-white"
+                            style={{ backgroundColor: getCategoryColor(post.categoryId) }}
+                          >
+                            {getCategoryName(post.categoryId)}
+                          </span>
+                          {post.pinned && (
+                            <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">
+                              পিন করা
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Post Content */}
+                  <h2 className="text-lg font-bold text-gray-900 mb-3">{post.title}</h2>
+                  <p className="text-gray-700 mb-4 leading-relaxed">{post.content}</p>
+
+                  {/* YouTube Video */}
+                  {post.youtubeUrl && renderYouTubeEmbed(post.youtubeUrl)}
+
+                  {/* Image */}
+                  {post.imageUrl && (
+                    <div className="mb-4">
+                      <img
+                        src={post.imageUrl}
+                        alt="Post image"
+                        className="w-full h-64 object-cover rounded-lg"
+                      />
+                    </div>
+                  )}
+
+                  {/* Files */}
+                  {post.files && post.files.length > 0 && (
+                    <div className="mb-4">
+                      <h4 className="font-medium text-gray-900 mb-2">সংযুক্ত ফাইল:</h4>
+                      <div className="space-y-2">
+                        {post.files.map((file, index) => (
+                          <a
+                            key={index}
+                            href={file.url}
+                            download={file.name}
+                            className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                          >
+                            <FileText className="h-5 w-5 text-blue-600" />
+                            <span className="flex-1 text-gray-900">{file.name}</span>
+                            <Download className="h-4 w-4 text-gray-400" />
+                          </a>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Post Actions */}
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <div className="flex items-center space-x-4">
+                      <button
+                        onClick={() => handleLike(post.id)}
+                        className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
+                          isPostLiked(post) 
+                            ? 'text-red-600 bg-red-50' 
+                            : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
+                        }`}
+                      >
+                        <Heart className={`h-4 w-4 ${isPostLiked(post) ? 'fill-current' : ''}`} />
+                        <span className="text-sm font-medium">{post.likesCount || 0}</span>
+                      </button>
+
+                      <div className="flex items-center space-x-2 text-gray-600">
+                        <MessageCircle className="h-4 w-4" />
+                        <span className="text-sm font-medium">{post.commentsCount || 0}</span>
+                      </div>
+                    </div>
+
+                    <button className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                      <Share2 className="h-4 w-4" />
+                    </button>
+                  </div>
+
+                  {/* Comments */}
+                  {postComments.length > 0 && (
+                    <div className="mt-4 space-y-3 border-t border-gray-100 pt-4">
+                      {postComments.map((comment: Comment) => (
+                        <div key={comment.id} className="flex space-x-3">
+                          {comment.authorAvatar ? (
+                            <img
+                              src={comment.authorAvatar}
+                              alt={comment.authorName}
+                              className="w-8 h-8 rounded-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-8 h-8 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center">
+                              <span className="text-white text-xs font-semibold">
+                                {comment.authorName.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                          )}
+                          <div className="flex-1 bg-gray-50 rounded-lg p-3">
+                            <div className="flex items-center space-x-2 mb-1">
+                              <p className="font-medium text-gray-900 text-sm">{comment.authorName}</p>
+                              <span className="text-xs text-gray-500">
+                                {formatTimeAgo(new Date(comment.createdAt))}
+                              </span>
+                            </div>
+                            <p className="text-gray-700 text-sm">{comment.content}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Comment Input */}
+                  <div className="mt-4 flex space-x-3">
+                    {currentUserProfile?.avatar ? (
+                      <img
+                        src={currentUserProfile.avatar}
+                        alt="Your avatar"
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs font-semibold">
+                          {currentUser?.email?.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex-1 flex space-x-2">
+                      <input
+                        type="text"
+                        value={commentTexts[post.id] || ''}
+                        onChange={(e) => setCommentTexts({ ...commentTexts, [post.id]: e.target.value })}
+                        placeholder="একটি মন্তব্য লিখুন..."
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        onKeyPress={(e) => e.key === 'Enter' && handleComment(post.id)}
+                      />
+                      <button
+                        onClick={() => handleComment(post.id)}
+                        disabled={!commentTexts[post.id]?.trim()}
+                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                      >
+                        পোস্ট
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
+            {approvedPosts.length === 0 && (
+              <div className="text-center py-12">
+                <MessageCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">কোনো পোস্ট নেই</h3>
+                <p className="text-gray-600">প্রথম পোস্ট তৈরি করুন এবং কমিউনিটির সাথে শেয়ার করুন!</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Desktop Sidebar - Topics */}
+        <div className="hidden lg:block">
+          <div className="bg-white rounded-xl shadow-md p-6 sticky top-24">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">টপিকস</h3>
+            <div className="space-y-3">
+              <button
+                onClick={() => setSelectedCategory('all')}
+                className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                  selectedCategory === 'all'
+                    ? 'bg-blue-600 text-white'
+                    : 'hover:bg-gray-100'
+                }`}
+              >
+                <div className="flex justify-between items-center">
+                  <span className="font-medium">সব পোস্ট</span>
+                  <span className="text-sm opacity-75">
+                    {posts.filter((p: Post) => p.approved).length}
+                  </span>
+                </div>
+              </button>
+              
+              {categories.map((category: Category) => {
+                const postCount = getCategoryPostCount(category.id);
+                return (
+                  <button
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category.id)}
+                    className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
+                      selectedCategory === category.id
+                        ? 'text-white'
+                        : 'hover:bg-gray-100'
+                    }`}
+                    style={{
+                      backgroundColor: selectedCategory === category.id ? category.color : undefined
+                    }}
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium">{category.name}</span>
+                      <span className="text-sm opacity-75">{postCount}</span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Create Post Modal */}
@@ -278,7 +593,7 @@ export const CommunitySection: React.FC = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold text-gray-900">নতুন পোস্ট তৈরি করুন</h3>
+              <h3 className="text-xl font-bold text-gray-900">পোস্ট তৈরি করুন</h3>
               <button
                 onClick={() => setShowCreatePost(false)}
                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -426,194 +741,6 @@ export const CommunitySection: React.FC = () => {
           </div>
         </div>
       )}
-
-      {/* Posts */}
-      <div className="space-y-6">
-        {approvedPosts.map((post: Post) => {
-          const postComments = getPostComments(post.id);
-          
-          return (
-            <div key={post.id} className="bg-white rounded-xl shadow-md border border-gray-100 p-6 max-w-2xl mx-auto hover:shadow-lg transition-shadow">
-              {/* Post Header */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-3">
-                  {post.authorAvatar ? (
-                    <img
-                      src={post.authorAvatar}
-                      alt={post.authorName}
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                      <span className="text-white font-semibold text-sm">
-                        {post.authorName.charAt(0).toUpperCase()}
-                      </span>
-                    </div>
-                  )}
-                  <div>
-                    <h3 className="font-semibold text-gray-900">{post.authorName}</h3>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-xs text-gray-500">
-                        {formatTimeAgo(new Date(post.createdAt))}
-                      </span>
-                      <span 
-                        className="px-2 py-1 rounded-full text-xs font-medium text-white"
-                        style={{ backgroundColor: getCategoryColor(post.categoryId) }}
-                      >
-                        {getCategoryName(post.categoryId)}
-                      </span>
-                      {post.pinned && (
-                        <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">
-                          পিন করা
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Post Content */}
-              <h2 className="text-lg font-bold text-gray-900 mb-3">{post.title}</h2>
-              <p className="text-gray-700 mb-4 leading-relaxed">{post.content}</p>
-
-              {/* YouTube Video */}
-              {post.youtubeUrl && renderYouTubeEmbed(post.youtubeUrl)}
-
-              {/* Image */}
-              {post.imageUrl && (
-                <div className="mb-4">
-                  <img
-                    src={post.imageUrl}
-                    alt="Post image"
-                    className="w-full h-64 object-cover rounded-lg"
-                  />
-                </div>
-              )}
-
-              {/* Files */}
-              {post.files && post.files.length > 0 && (
-                <div className="mb-4">
-                  <h4 className="font-medium text-gray-900 mb-2">সংযুক্ত ফাইল:</h4>
-                  <div className="space-y-2">
-                    {post.files.map((file, index) => (
-                      <a
-                        key={index}
-                        href={file.url}
-                        download={file.name}
-                        className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-                      >
-                        <FileText className="h-5 w-5 text-blue-600" />
-                        <span className="flex-1 text-gray-900">{file.name}</span>
-                        <Download className="h-4 w-4 text-gray-400" />
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Post Actions */}
-              <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-                <div className="flex items-center space-x-4">
-                  <button
-                    onClick={() => handleLike(post.id)}
-                    className={`flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors ${
-                      isPostLiked(post) 
-                        ? 'text-red-600 bg-red-50' 
-                        : 'text-gray-600 hover:text-red-600 hover:bg-red-50'
-                    }`}
-                  >
-                    <Heart className={`h-4 w-4 ${isPostLiked(post) ? 'fill-current' : ''}`} />
-                    <span className="text-sm font-medium">{post.likesCount || 0}</span>
-                  </button>
-
-                  <div className="flex items-center space-x-2 text-gray-600">
-                    <MessageCircle className="h-4 w-4" />
-                    <span className="text-sm font-medium">{post.commentsCount || 0}</span>
-                  </div>
-                </div>
-
-                <button className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
-                  <Share2 className="h-4 w-4" />
-                </button>
-              </div>
-
-              {/* Comments */}
-              {postComments.length > 0 && (
-                <div className="mt-4 space-y-3 border-t border-gray-100 pt-4">
-                  {postComments.map((comment: Comment) => (
-                    <div key={comment.id} className="flex space-x-3">
-                      {comment.authorAvatar ? (
-                        <img
-                          src={comment.authorAvatar}
-                          alt={comment.authorName}
-                          className="w-8 h-8 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-8 h-8 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs font-semibold">
-                            {comment.authorName.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                      )}
-                      <div className="flex-1 bg-gray-50 rounded-lg p-3">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <p className="font-medium text-gray-900 text-sm">{comment.authorName}</p>
-                          <span className="text-xs text-gray-500">
-                            {formatTimeAgo(new Date(comment.createdAt))}
-                          </span>
-                        </div>
-                        <p className="text-gray-700 text-sm">{comment.content}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Comment Input */}
-              <div className="mt-4 flex space-x-3">
-                {currentUserProfile?.avatar ? (
-                  <img
-                    src={currentUserProfile.avatar}
-                    alt="Your avatar"
-                    className="w-8 h-8 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                    <span className="text-white text-xs font-semibold">
-                      {currentUser?.email?.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                )}
-                <div className="flex-1 flex space-x-2">
-                  <input
-                    type="text"
-                    value={commentTexts[post.id] || ''}
-                    onChange={(e) => setCommentTexts({ ...commentTexts, [post.id]: e.target.value })}
-                    placeholder="একটি মন্তব্য লিখুন..."
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
-                    onKeyPress={(e) => e.key === 'Enter' && handleComment(post.id)}
-                  />
-                  <button
-                    onClick={() => handleComment(post.id)}
-                    disabled={!commentTexts[post.id]?.trim()}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm"
-                  >
-                    পোস্ট
-                  </button>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-
-        {approvedPosts.length === 0 && (
-          <div className="text-center py-12">
-            <MessageCircle className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">কোনো পোস্ট নেই</h3>
-            <p className="text-gray-600">প্রথম পোস্ট তৈরি করুন এবং কমিউনিটির সাথে শেয়ার করুন!</p>
-          </div>
-        )}
-      </div>
     </div>
   );
 };
