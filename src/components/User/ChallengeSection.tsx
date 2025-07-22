@@ -268,25 +268,25 @@ const ChallengeSection: React.FC = () => {
         {/* Enhanced Header */}
         <div className="relative bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 rounded-3xl text-white p-8 mb-8 shadow-2xl overflow-hidden">
           <div className="absolute inset-0 bg-black bg-opacity-10"></div>
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white bg-opacity-10 rounded-full -translate-y-32 translate-x-32"></div>
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white bg-opacity-10 rounded-full translate-y-24 -translate-x-24"></div>
+          <div className="absolute top-0 right-0 w-32 lg:w-64 h-32 lg:h-64 bg-white bg-opacity-10 rounded-full -translate-y-16 lg:-translate-y-32 translate-x-16 lg:translate-x-32"></div>
+          <div className="absolute bottom-0 left-0 w-24 lg:w-48 h-24 lg:h-48 bg-white bg-opacity-10 rounded-full translate-y-12 lg:translate-y-24 -translate-x-12 lg:-translate-x-24"></div>
           
           <div className="relative z-10 text-center">
             <div className="flex justify-center mb-4">
               <Trophy className="h-16 w-16 text-yellow-300 animate-bounce" />
             </div>
-            <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-white to-yellow-100 bg-clip-text text-transparent">
+            <h1 className="text-2xl lg:text-4xl font-bold mb-3 bg-gradient-to-r from-white to-yellow-100 bg-clip-text text-transparent">
               চ্যালেঞ্জ সেকশন
             </h1>
-            <p className="text-purple-100 text-lg mb-6">আপনার দক্ষতা প্রমাণ করুন এবং পুরস্কার জিতুন!</p>
-            <div className="flex justify-center space-x-6 text-purple-100">
+            <p className="text-purple-100 text-sm lg:text-lg mb-6">আপনার দক্ষতা প্রমাণ করুন এবং পুরস্কার জিতুন!</p>
+            <div className="flex flex-col lg:flex-row justify-center space-y-2 lg:space-y-0 lg:space-x-6 text-purple-100">
               <div className="flex items-center space-x-2">
                 <Calendar className="h-5 w-5" />
-                <span>৭ দিনের চ্যালেঞ্জ - ফ্রি</span>
+                <span className="text-sm lg:text-base">৭ দিনের চ্যালেঞ্জ - ফ্রি</span>
               </div>
               <div className="flex items-center space-x-2">
                 <Star className="h-5 w-5" />
-                <span>৩০ দিনের চ্যালেঞ্জ - প্রিমিয়াম</span>
+                <span className="text-sm lg:text-base">৩০ দিনের চ্যালেঞ্জ - প্রিমিয়াম</span>
               </div>
             </div>
           </div>
@@ -294,10 +294,10 @@ const ChallengeSection: React.FC = () => {
 
         {/* Challenge Tabs */}
         <div className="flex justify-center mb-8">
-          <div className="bg-white rounded-2xl shadow-xl p-2 flex space-x-2">
+          <div className="bg-white rounded-2xl shadow-xl p-2 flex flex-col lg:flex-row space-y-2 lg:space-y-0 lg:space-x-2 w-full max-w-md lg:max-w-none">
             <button
               onClick={() => setActiveTab('7day')}
-              className={`px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 ${
+              className={`px-4 lg:px-8 py-3 lg:py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 text-sm lg:text-base ${
                 activeTab === '7day'
                   ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg'
                   : 'text-gray-600 hover:bg-gray-100'
@@ -310,7 +310,7 @@ const ChallengeSection: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab('30day')}
-              className={`px-8 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 ${
+              className={`px-4 lg:px-8 py-3 lg:py-4 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 text-sm lg:text-base ${
                 activeTab === '30day'
                   ? 'bg-gradient-to-r from-orange-600 to-red-600 text-white shadow-lg'
                   : 'text-gray-600 hover:bg-gray-100'
@@ -326,12 +326,12 @@ const ChallengeSection: React.FC = () => {
 
         {/* Challenge Info & Actions */}
         {currentChallenge && (
-          <div className="bg-white rounded-3xl shadow-xl p-8 mb-8 border border-gray-100">
-            <div className="flex justify-between items-start mb-6">
+          <div className="bg-white rounded-3xl shadow-xl p-4 lg:p-8 mb-8 border border-gray-100">
+            <div className="flex flex-col lg:flex-row justify-between items-start mb-6 space-y-4 lg:space-y-0">
               <div className="flex-1">
-                <h2 className="text-3xl font-bold text-gray-900 mb-3">{currentChallenge.title}</h2>
-                <p className="text-gray-600 text-lg mb-4">{currentChallenge.description}</p>
-                <div className="flex items-center space-x-6 text-sm text-gray-500">
+                <h2 className="text-xl lg:text-3xl font-bold text-gray-900 mb-3">{currentChallenge.title}</h2>
+                <p className="text-gray-600 text-sm lg:text-lg mb-4">{currentChallenge.description}</p>
+                <div className="flex flex-col lg:flex-row items-start lg:items-center space-y-2 lg:space-y-0 lg:space-x-6 text-sm text-gray-500">
                   <div className="flex items-center space-x-2">
                     <Calendar className="h-4 w-4" />
                     <span>শুরু: {new Date(currentChallenge.startDate).toLocaleDateString('bn-BD')}</span>
@@ -347,17 +347,17 @@ const ChallengeSection: React.FC = () => {
                 </div>
               </div>
               
-              <div className="flex flex-col space-y-4">
+              <div className="flex flex-col space-y-4 w-full lg:w-auto">
                 {currentChallenge.type === '30day' && currentChallenge.price > 0 && !userPayment && (
                   <div className="text-center">
-                    <div className="bg-gradient-to-r from-orange-100 to-red-100 rounded-2xl p-6 mb-4">
+                    <div className="bg-gradient-to-r from-orange-100 to-red-100 rounded-2xl p-4 lg:p-6 mb-4">
                       <CreditCard className="h-8 w-8 text-orange-600 mx-auto mb-2" />
                       <p className="text-orange-800 font-semibold">প্রিমিয়াম চ্যালেঞ্জ</p>
-                      <p className="text-2xl font-bold text-orange-900">৳{currentChallenge.price}</p>
+                      <p className="text-xl lg:text-2xl font-bold text-orange-900">৳{currentChallenge.price}</p>
                     </div>
                     <button
                       onClick={() => setIsPaymentModalOpen(true)}
-                      className="bg-gradient-to-r from-orange-600 to-red-600 text-white px-8 py-3 rounded-2xl hover:from-orange-700 hover:to-red-700 transition-all duration-300 transform hover:scale-105 shadow-lg font-semibold"
+                      className="w-full lg:w-auto bg-gradient-to-r from-orange-600 to-red-600 text-white px-6 lg:px-8 py-3 rounded-2xl hover:from-orange-700 hover:to-red-700 transition-all duration-300 transform hover:scale-105 shadow-lg font-semibold text-sm lg:text-base"
                     >
                       পেমেন্ট করুন
                     </button>
@@ -367,7 +367,7 @@ const ChallengeSection: React.FC = () => {
                 {canParticipate(currentChallenge) && (
                   <button
                     onClick={() => setIsSubmissionModalOpen(true)}
-                    className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-3 rounded-2xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 shadow-lg font-semibold flex items-center space-x-2"
+                    className="w-full lg:w-auto bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 lg:px-8 py-3 rounded-2xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 shadow-lg font-semibold flex items-center justify-center space-x-2 text-sm lg:text-base"
                   >
                     <Upload className="h-5 w-5" />
                     <span>প্রজেক্ট জমা দিন</span>
@@ -387,7 +387,7 @@ const ChallengeSection: React.FC = () => {
               <div key={submission.id} className="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 transform hover:-translate-y-1 max-w-2xl mx-auto">
                 {/* Rank Badge */}
                 {index < 3 && (
-                  <div className={`absolute top-3 left-3 z-10 px-3 py-1 rounded-full text-white font-bold shadow-md text-sm ${
+                  <div className={`absolute top-2 lg:top-3 left-2 lg:left-3 z-10 px-2 lg:px-3 py-1 rounded-full text-white font-bold shadow-md text-xs lg:text-sm ${
                     index === 0 ? 'bg-gradient-to-r from-yellow-400 to-yellow-600' :
                     index === 1 ? 'bg-gradient-to-r from-gray-300 to-gray-500' :
                     'bg-gradient-to-r from-orange-400 to-orange-600'
@@ -397,7 +397,7 @@ const ChallengeSection: React.FC = () => {
                 )}
 
                 {/* Submission Header */}
-                <div className="p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-purple-50">
+                <div className="p-3 lg:p-4 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-purple-50">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <div className="relative">
@@ -405,22 +405,22 @@ const ChallengeSection: React.FC = () => {
                           <img
                             src={submission.authorAvatar}
                             alt={submission.authorName}
-                            className="w-12 h-12 rounded-full object-cover ring-2 ring-purple-100 shadow-md"
+                            className="w-10 lg:w-12 h-10 lg:h-12 rounded-full object-cover ring-2 ring-purple-100 shadow-md"
                           />
                         ) : (
-                          <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center ring-2 ring-purple-100 shadow-md">
-                            <span className="text-white font-bold text-lg">
+                          <div className="w-10 lg:w-12 h-10 lg:h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center ring-2 ring-purple-100 shadow-md">
+                            <span className="text-white font-bold text-sm lg:text-lg">
                               {submission.authorName.charAt(0).toUpperCase()}
                             </span>
                           </div>
                         )}
-                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white shadow-md"></div>
+                        <div className="absolute -bottom-1 -right-1 w-3 lg:w-4 h-3 lg:h-4 bg-green-400 rounded-full border-2 border-white shadow-md"></div>
                       </div>
                       <div>
-                        <h3 className="font-bold text-gray-900 text-lg">{submission.authorName}</h3>
+                        <h3 className="font-bold text-gray-900 text-sm lg:text-lg">{submission.authorName}</h3>
                         <div className="flex items-center space-x-3 mt-1">
                           <span className="text-xs text-gray-500 font-medium">{formatTimeAgo(submission.createdAt)}</span>
-                          <span className={`px-3 py-1 rounded-full text-xs font-semibold text-white ${
+                          <span className={`px-2 lg:px-3 py-1 rounded-full text-xs font-semibold text-white ${
                             activeTab === '7day' ? 'bg-purple-500' : 'bg-orange-500'
                           }`}>
                             {activeTab === '7day' ? '৭ দিনের চ্যালেঞ্জ' : '৩০ দিনের চ্যালেঞ্জ'}
@@ -432,9 +432,9 @@ const ChallengeSection: React.FC = () => {
                 </div>
 
                 {/* Submission Content */}
-                <div className="p-4">
-                  <h2 className="text-xl font-bold text-gray-900 mb-3 leading-tight">{submission.title}</h2>
-                  <p className="text-gray-700 mb-4 leading-relaxed text-sm">{submission.description}</p>
+                <div className="p-3 lg:p-4">
+                  <h2 className="text-lg lg:text-xl font-bold text-gray-900 mb-3 leading-tight">{submission.title}</h2>
+                  <p className="text-gray-700 mb-4 leading-relaxed text-sm lg:text-base">{submission.description}</p>
                   
                   {/* Video Thumbnail */}
                   <div className="mb-4">
@@ -442,14 +442,14 @@ const ChallengeSection: React.FC = () => {
                       <img
                         src={getThumbnailUrl(submission.videoId, 'maxres')}
                         alt={submission.title}
-                        className="w-full h-48 object-cover"
+                        className="w-full h-32 lg:h-48 object-cover"
                       />
                       <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
                         <button
                           onClick={() => openPlayer(submission.videoId, submission.title)}
                           className="bg-white text-gray-900 p-3 rounded-full hover:bg-gray-100 transition-colors transform hover:scale-110"
                         >
-                          <Play className="h-6 w-6" />
+                          <Play className="h-4 lg:h-6 w-4 lg:w-6" />
                         </button>
                       </div>
                     </div>
@@ -460,31 +460,31 @@ const ChallengeSection: React.FC = () => {
                       <img
                         src={submission.imageUrl}
                         alt="Project"
-                        className="w-full h-48 object-cover rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
+                        className="w-full h-32 lg:h-48 object-cover rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
                       />
                     </div>
                   )}
                   
                   {submission.files && submission.files.length > 0 && (
                     <div className="mb-4">
-                      <h4 className="font-bold text-gray-900 mb-3 flex items-center text-sm">
+                      <h4 className="font-bold text-gray-900 mb-3 flex items-center text-xs lg:text-sm">
                         <File className="h-4 w-4 mr-2 text-purple-600" />
                         সংযুক্ত ফাইল ({submission.files.length}টি)
                       </h4>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="grid grid-cols-1 gap-2 lg:gap-3">
                         {submission.files.map((file, index) => (
                           <a
                             key={index}
                             href={file.url}
                             download={file.name}
-                            className="flex items-center space-x-3 p-3 bg-gradient-to-r from-gray-50 to-purple-50 rounded-xl hover:from-purple-50 hover:to-pink-50 transition-all duration-300 border border-gray-200 hover:border-purple-300 hover:shadow-md group"
+                            className="flex items-center space-x-2 lg:space-x-3 p-2 lg:p-3 bg-gradient-to-r from-gray-50 to-purple-50 rounded-xl hover:from-purple-50 hover:to-pink-50 transition-all duration-300 border border-gray-200 hover:border-purple-300 hover:shadow-md group"
                           >
-                            <span className="text-2xl">{getFileIcon(file.type)}</span>
+                            <span className="text-lg lg:text-2xl">{getFileIcon(file.type)}</span>
                             <div className="flex-1 min-w-0">
-                              <p className="text-xs font-semibold text-gray-900 truncate group-hover:text-purple-700">{file.name}</p>
+                              <p className="text-xs lg:text-sm font-semibold text-gray-900 truncate group-hover:text-purple-700">{file.name}</p>
                               <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
                             </div>
-                            <Download className="h-4 w-4 text-gray-400 group-hover:text-purple-600 transition-colors" />
+                            <Download className="h-3 lg:h-4 w-3 lg:w-4 text-gray-400 group-hover:text-purple-600 transition-colors" />
                           </a>
                         ))}
                       </div>
@@ -493,31 +493,31 @@ const ChallengeSection: React.FC = () => {
                 </div>
 
                 {/* Submission Actions */}
-                <div className="px-4 py-3 bg-gradient-to-r from-gray-50 to-purple-50 border-t border-gray-100">
+                <div className="px-3 lg:px-4 py-3 bg-gradient-to-r from-gray-50 to-purple-50 border-t border-gray-100">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-6">
+                    <div className="flex items-center space-x-3 lg:space-x-6">
                       <button 
                         onClick={() => toggleLike(submission.id)}
-                        className={`flex items-center space-x-2 px-4 py-2 rounded-xl transition-all duration-300 transform hover:scale-105 ${
+                        className={`flex items-center space-x-1 lg:space-x-2 px-2 lg:px-4 py-2 rounded-xl transition-all duration-300 transform hover:scale-105 text-xs lg:text-sm ${
                           isSubmissionLiked(submission) 
                             ? 'text-red-600 bg-red-50 hover:bg-red-100 shadow-md' 
                             : 'text-gray-600 hover:text-red-600 hover:bg-red-50 hover:shadow-md'
                         }`}
                       >
-                        <Heart className={`h-5 w-5 ${isSubmissionLiked(submission) ? 'fill-current' : ''}`} />
-                        <span className="font-bold text-sm">{submission.likesCount}</span>
-                        <span className="text-xs font-semibold">লাইক</span>
+                        <Heart className={`h-4 lg:h-5 w-4 lg:w-5 ${isSubmissionLiked(submission) ? 'fill-current' : ''}`} />
+                        <span className="font-bold">{submission.likesCount}</span>
+                        <span className="font-semibold hidden lg:inline">লাইক</span>
                       </button>
                       <button
                         onClick={() => setShowComments(showComments === submission.id ? null : submission.id)}
-                        className="flex items-center space-x-2 px-4 py-2 rounded-xl text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 transform hover:scale-105 hover:shadow-md"
+                        className="flex items-center space-x-1 lg:space-x-2 px-2 lg:px-4 py-2 rounded-xl text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 transform hover:scale-105 hover:shadow-md text-xs lg:text-sm"
                       >
-                        <MessageSquare className="h-5 w-5" />
-                        <span className="font-bold text-sm">{submission.commentsCount}</span>
-                        <span className="text-xs font-semibold">মন্তব্য</span>
+                        <MessageSquare className="h-4 lg:h-5 w-4 lg:w-5" />
+                        <span className="font-bold">{submission.commentsCount}</span>
+                        <span className="font-semibold hidden lg:inline">মন্তব্য</span>
                       </button>
                     </div>
-                    <div className="text-xs text-gray-500 font-medium">
+                    <div className="text-xs text-gray-500 font-medium hidden lg:block">
                       {submission.likesCount > 0 && (
                         <span className="bg-gray-100 px-3 py-1 rounded-full">
                           {submission.likesCount} জন লাইক করেছেন
@@ -530,7 +530,7 @@ const ChallengeSection: React.FC = () => {
                 {/* Comments Section */}
                 {showComments === submission.id && (
                   <div className="border-t border-gray-100 bg-white">
-                    <div className="p-4">
+                    <div className="p-3 lg:p-4">
                       <div className="space-y-4 mb-6">
                         {submissionComments.map((comment: ChallengeComment) => (
                           <div key={comment.id} className="flex space-x-3">
@@ -539,25 +539,25 @@ const ChallengeSection: React.FC = () => {
                                 <img
                                   src={comment.authorAvatar}
                                   alt={comment.authorName}
-                                  className="w-10 h-10 rounded-full object-cover ring-2 ring-gray-200"
+                                  className="w-8 lg:w-10 h-8 lg:h-10 rounded-full object-cover ring-2 ring-gray-200"
                                 />
                               ) : (
-                                <div className="w-10 h-10 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center">
-                                  <span className="text-white text-sm font-semibold">
+                                <div className="w-8 lg:w-10 h-8 lg:h-10 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center">
+                                  <span className="text-white text-xs lg:text-sm font-semibold">
                                     {comment.authorName.charAt(0).toUpperCase()}
                                   </span>
                                 </div>
                               )}
                             </div>
                             <div className="flex-1">
-                              <div className="bg-gradient-to-r from-gray-100 to-purple-50 rounded-xl px-4 py-3 hover:from-purple-50 hover:to-pink-50 transition-all duration-300 shadow-sm hover:shadow-md">
+                              <div className="bg-gradient-to-r from-gray-100 to-purple-50 rounded-xl px-3 lg:px-4 py-2 lg:py-3 hover:from-purple-50 hover:to-pink-50 transition-all duration-300 shadow-sm hover:shadow-md">
                                 <div className="flex items-center space-x-2 mb-2">
-                                  <p className="font-bold text-xs text-gray-900">{comment.authorName}</p>
+                                  <p className="font-bold text-xs lg:text-sm text-gray-900">{comment.authorName}</p>
                                   <span className="text-xs text-gray-500 bg-white px-2 py-1 rounded-full">
                                     {formatTimeAgo(comment.createdAt)}
                                   </span>
                                 </div>
-                                <p className="text-gray-700 leading-relaxed text-sm">{comment.content}</p>
+                                <p className="text-gray-700 leading-relaxed text-xs lg:text-sm">{comment.content}</p>
                               </div>
                             </div>
                           </div>
@@ -565,7 +565,7 @@ const ChallengeSection: React.FC = () => {
                         
                         {submissionComments.length === 0 && (
                           <div className="text-center py-8">
-                            <MessageSquare className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                            <MessageSquare className="h-8 lg:h-12 w-8 lg:w-12 text-gray-300 mx-auto mb-3" />
                             <p className="text-gray-500 text-sm">এখনো কোন মন্তব্য নেই। প্রথম মন্তব্য করুন!</p>
                           </div>
                         )}
@@ -578,23 +578,23 @@ const ChallengeSection: React.FC = () => {
                             <img
                               src={currentUserProfile.avatar}
                               alt="Your avatar"
-                              className="w-10 h-10 rounded-full object-cover ring-2 ring-purple-200"
+                              className="w-8 lg:w-10 h-8 lg:h-10 rounded-full object-cover ring-2 ring-purple-200"
                             />
                           ) : (
-                            <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center">
-                              <span className="text-white text-sm font-semibold">
+                            <div className="w-8 lg:w-10 h-8 lg:h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center">
+                              <span className="text-white text-xs lg:text-sm font-semibold">
                                 {currentUser?.email?.charAt(0).toUpperCase()}
                               </span>
                             </div>
                           )}
                         </div>
-                        <div className="flex-1 flex space-x-3">
+                        <div className="flex-1 flex flex-col lg:flex-row space-y-2 lg:space-y-0 lg:space-x-3">
                           <input
                             type="text"
                             value={commentText}
                             onChange={(e) => setCommentText(e.target.value)}
                             placeholder="একটি মন্তব্য লিখুন..."
-                            className="flex-1 px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-white shadow-sm hover:shadow-md text-sm"
+                            className="flex-1 px-3 lg:px-4 py-2 lg:py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-white shadow-sm hover:shadow-md text-sm"
                             onKeyPress={(e) => {
                               if (e.key === 'Enter' && commentText.trim()) {
                                 handleAddComment(submission.id);
@@ -604,7 +604,7 @@ const ChallengeSection: React.FC = () => {
                           <button
                             onClick={() => handleAddComment(submission.id)}
                             disabled={!commentText.trim()}
-                            className="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 shadow-md hover:shadow-lg"
+                            className="px-4 lg:px-6 py-2 lg:py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 shadow-md hover:shadow-lg text-sm"
                           >
                             পাঠান
                           </button>
@@ -619,14 +619,14 @@ const ChallengeSection: React.FC = () => {
           
           {challengeSubmissions.length === 0 && currentChallenge && (
             <div className="text-center py-20">
-              <div className="bg-white rounded-3xl shadow-xl p-16">
-                <Trophy className="h-20 w-20 text-gray-300 mx-auto mb-8" />
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">এখনো কোন প্রজেক্ট নেই</h3>
-                <p className="text-gray-500 mb-8 text-lg">প্রথম হয়ে আপনার প্রজেক্ট জমা দিন!</p>
+             <div className="bg-white rounded-3xl shadow-xl p-8 lg:p-16">
+               <Trophy className="h-12 lg:h-20 w-12 lg:w-20 text-gray-300 mx-auto mb-4 lg:mb-8" />
+               <h3 className="text-lg lg:text-2xl font-bold text-gray-900 mb-4">এখনো কোন প্রজেক্ট নেই</h3>
+               <p className="text-gray-500 mb-4 lg:mb-8 text-sm lg:text-lg">প্রথম হয়ে আপনার প্রজেক্ট জমা দিন!</p>
                 {canParticipate(currentChallenge) && (
                   <button
                     onClick={() => setIsSubmissionModalOpen(true)}
-                    className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-2xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 shadow-lg font-semibold"
+                   className="px-6 lg:px-8 py-3 lg:py-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-2xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 shadow-lg font-semibold text-sm lg:text-base"
                   >
                     প্রথম প্রজেক্ট জমা দিন
                   </button>
@@ -637,10 +637,10 @@ const ChallengeSection: React.FC = () => {
 
           {!currentChallenge && (
             <div className="text-center py-20">
-              <div className="bg-white rounded-3xl shadow-xl p-16">
-                <Calendar className="h-20 w-20 text-gray-300 mx-auto mb-8" />
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">কোন সক্রিয় চ্যালেঞ্জ নেই</h3>
-                <p className="text-gray-500 text-lg">নতুন চ্যালেঞ্জের জন্য অপেক্ষা করুন!</p>
+             <div className="bg-white rounded-3xl shadow-xl p-8 lg:p-16">
+               <Calendar className="h-12 lg:h-20 w-12 lg:w-20 text-gray-300 mx-auto mb-4 lg:mb-8" />
+               <h3 className="text-lg lg:text-2xl font-bold text-gray-900 mb-4">কোন সক্রিয় চ্যালেঞ্জ নেই</h3>
+               <p className="text-gray-500 text-sm lg:text-lg">নতুন চ্যালেঞ্জের জন্য অপেক্ষা করুন!</p>
               </div>
             </div>
           )}
@@ -649,12 +649,12 @@ const ChallengeSection: React.FC = () => {
         {/* Submission Modal */}
         {isSubmissionModalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-3xl max-w-3xl w-full p-10 max-h-[90vh] overflow-y-auto shadow-2xl">
+           <div className="bg-white rounded-3xl max-w-3xl w-full p-6 lg:p-10 max-h-[90vh] overflow-y-auto shadow-2xl">
               <div className="flex items-center justify-between mb-8">
-                <h3 className="text-3xl font-bold text-gray-900">প্রজেক্ট জমা দিন</h3>
+               <h3 className="text-xl lg:text-3xl font-bold text-gray-900">প্রজেক্ট জমা দিন</h3>
                 <button
                   onClick={() => setIsSubmissionModalOpen(false)}
-                  className="p-3 hover:bg-gray-100 rounded-full transition-colors text-2xl"
+                 className="p-2 lg:p-3 hover:bg-gray-100 rounded-full transition-colors text-xl lg:text-2xl"
                 >
                   ×
                 </button>
@@ -662,7 +662,7 @@ const ChallengeSection: React.FC = () => {
               
               <form onSubmit={handleSubmissionSubmit} className="space-y-8">
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-3">
+                 <label className="block text-sm lg:text-base font-bold text-gray-700 mb-3">
                     প্রজেক্টের শিরোনাম *
                   </label>
                   <input
@@ -670,27 +670,27 @@ const ChallengeSection: React.FC = () => {
                     required
                     value={submissionForm.title}
                     onChange={(e) => setSubmissionForm({ ...submissionForm, title: e.target.value })}
-                    className="w-full px-6 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-lg"
+                   className="w-full px-4 lg:px-6 py-3 lg:py-4 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-sm lg:text-lg"
                     placeholder="আকর্ষণীয় শিরোনাম লিখুন..."
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-3">
+                 <label className="block text-sm lg:text-base font-bold text-gray-700 mb-3">
                     প্রজেক্টের বিবরণ *
                   </label>
                   <textarea
                     required
                     value={submissionForm.description}
                     onChange={(e) => setSubmissionForm({ ...submissionForm, description: e.target.value })}
-                    className="w-full px-6 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-lg"
+                   className="w-full px-4 lg:px-6 py-3 lg:py-4 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-sm lg:text-lg"
                     rows={6}
                     placeholder="আপনার প্রজেক্ট সম্পর্কে বিস্তারিত লিখুন..."
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-3">
+                 <label className="block text-sm lg:text-base font-bold text-gray-700 mb-3">
                     ইউটিউব ভিডিও লিংক *
                   </label>
                   <input
@@ -698,33 +698,33 @@ const ChallengeSection: React.FC = () => {
                     required
                     value={submissionForm.youtubeUrl}
                     onChange={(e) => setSubmissionForm({ ...submissionForm, youtubeUrl: e.target.value })}
-                    className="w-full px-6 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-lg"
+                   className="w-full px-4 lg:px-6 py-3 lg:py-4 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-sm lg:text-lg"
                     placeholder="https://youtube.com/watch?v=..."
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-3">
+                 <label className="block text-sm lg:text-base font-bold text-gray-700 mb-3">
                     প্রজেক্টের ছবি (ঐচ্ছিক)
                   </label>
                   <input
                     type="url"
                     value={submissionForm.imageUrl}
                     onChange={(e) => setSubmissionForm({ ...submissionForm, imageUrl: e.target.value })}
-                    className="w-full px-6 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-lg"
+                   className="w-full px-4 lg:px-6 py-3 lg:py-4 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 text-sm lg:text-lg"
                     placeholder="https://example.com/image.jpg"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-3">
+                 <label className="block text-sm lg:text-base font-bold text-gray-700 mb-3">
                     ফাইল আপলোড করুন (ঐচ্ছিক)
                   </label>
                   <input
                     type="file"
                     multiple
                     onChange={handleFileUpload}
-                    className="w-full px-6 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
+                   className="w-full px-4 lg:px-6 py-3 lg:py-4 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                     disabled={uploading}
                   />
                   {submissionForm.files.length > 0 && (
@@ -732,16 +732,16 @@ const ChallengeSection: React.FC = () => {
                       {submissionForm.files.map((file) => (
                         <div key={file.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl">
                           <div className="flex items-center space-x-4">
-                            <span className="text-3xl">{getFileIcon(file.type)}</span>
+                           <span className="text-2xl lg:text-3xl">{getFileIcon(file.type)}</span>
                             <div>
-                              <p className="text-sm font-semibold">{file.name}</p>
+                             <p className="text-xs lg:text-sm font-semibold">{file.name}</p>
                               <p className="text-xs text-gray-500">{formatFileSize(file.size)}</p>
                             </div>
                           </div>
                           <button
                             type="button"
                             onClick={() => removeFile(file.id)}
-                            className="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 transition-colors text-xl"
+                           className="text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50 transition-colors text-lg lg:text-xl"
                           >
                             ×
                           </button>
@@ -751,18 +751,18 @@ const ChallengeSection: React.FC = () => {
                   )}
                 </div>
                 
-                <div className="flex space-x-6 pt-8">
+               <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-6 pt-8">
                   <button
                     type="submit"
                     disabled={uploading}
-                    className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 rounded-2xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 font-bold text-lg shadow-lg transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+                   className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 lg:py-4 rounded-2xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 font-bold text-sm lg:text-lg shadow-lg transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {uploading ? 'আপলোড হচ্ছে...' : 'প্রজেক্ট জমা দিন'}
                   </button>
                   <button
                     type="button"
                     onClick={() => setIsSubmissionModalOpen(false)}
-                    className="flex-1 bg-gray-200 text-gray-700 py-4 rounded-2xl hover:bg-gray-300 transition-all duration-300 font-bold text-lg"
+                   className="flex-1 bg-gray-200 text-gray-700 py-3 lg:py-4 rounded-2xl hover:bg-gray-300 transition-all duration-300 font-bold text-sm lg:text-lg"
                   >
                     বাতিল
                   </button>
@@ -775,20 +775,20 @@ const ChallengeSection: React.FC = () => {
         {/* Payment Modal */}
         {isPaymentModalOpen && currentChallenge && (
           <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="bg-white rounded-3xl max-w-md w-full p-10 shadow-2xl">
+           <div className="bg-white rounded-3xl max-w-md w-full p-6 lg:p-10 shadow-2xl">
               <div className="text-center mb-8">
-                <CreditCard className="h-16 w-16 text-orange-600 mx-auto mb-4" />
-                <h3 className="text-3xl font-bold text-gray-900 mb-2">পেমেন্ট করুন</h3>
+               <CreditCard className="h-12 lg:h-16 w-12 lg:w-16 text-orange-600 mx-auto mb-4" />
+               <h3 className="text-xl lg:text-3xl font-bold text-gray-900 mb-2">পেমেন্ট করুন</h3>
                 <p className="text-gray-600">৩০ দিনের চ্যালেঞ্জে অংশগ্রহণের জন্য</p>
               </div>
               
-              <div className="bg-gradient-to-r from-orange-100 to-red-100 rounded-2xl p-6 mb-8 text-center">
+             <div className="bg-gradient-to-r from-orange-100 to-red-100 rounded-2xl p-4 lg:p-6 mb-8 text-center">
                 <p className="text-orange-800 font-semibold mb-2">পেমেন্ট পরিমাণ</p>
-                <p className="text-3xl font-bold text-orange-900">৳{currentChallenge.price}</p>
+               <p className="text-2xl lg:text-3xl font-bold text-orange-900">৳{currentChallenge.price}</p>
                 {currentChallenge.paymentNumber && (
                   <div className="mt-4 p-4 bg-white rounded-xl">
                     <p className="text-sm text-gray-600 mb-1">পেমেন্ট নম্বর</p>
-                    <p className="text-lg font-bold text-gray-900">{currentChallenge.paymentNumber}</p>
+                   <p className="text-base lg:text-lg font-bold text-gray-900">{currentChallenge.paymentNumber}</p>
                     <p className="text-xs text-gray-500 mt-1">বিকাশ/নগদ</p>
                   </div>
                 )}
@@ -796,7 +796,7 @@ const ChallengeSection: React.FC = () => {
               
               <form onSubmit={handlePaymentSubmit} className="space-y-6">
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-3">
+                 <label className="block text-sm lg:text-base font-bold text-gray-700 mb-3">
                     আপনার পেমেন্ট নম্বর *
                   </label>
                   <input
@@ -804,13 +804,13 @@ const ChallengeSection: React.FC = () => {
                     required
                     value={paymentForm.paymentNumber}
                     onChange={(e) => setPaymentForm({ ...paymentForm, paymentNumber: e.target.value })}
-                    className="w-full px-6 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 text-lg"
+                   className="w-full px-4 lg:px-6 py-3 lg:py-4 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 text-sm lg:text-lg"
                     placeholder="01XXXXXXXXX"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-3">
+                 <label className="block text-sm lg:text-base font-bold text-gray-700 mb-3">
                     ট্রানজেকশন আইডি *
                   </label>
                   <input
@@ -818,22 +818,22 @@ const ChallengeSection: React.FC = () => {
                     required
                     value={paymentForm.transactionId}
                     onChange={(e) => setPaymentForm({ ...paymentForm, transactionId: e.target.value })}
-                    className="w-full px-6 py-4 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 text-lg"
+                   className="w-full px-4 lg:px-6 py-3 lg:py-4 border border-gray-300 rounded-2xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 text-sm lg:text-lg"
                     placeholder="TXN123456789"
                   />
                 </div>
                 
-                <div className="flex space-x-4 pt-6">
+               <div className="flex flex-col lg:flex-row space-y-4 lg:space-y-0 lg:space-x-4 pt-6">
                   <button
                     type="submit"
-                    className="flex-1 bg-gradient-to-r from-orange-600 to-red-600 text-white py-4 rounded-2xl hover:from-orange-700 hover:to-red-700 transition-all duration-300 font-bold text-lg shadow-lg transform hover:scale-105"
+                   className="flex-1 bg-gradient-to-r from-orange-600 to-red-600 text-white py-3 lg:py-4 rounded-2xl hover:from-orange-700 hover:to-red-700 transition-all duration-300 font-bold text-sm lg:text-lg shadow-lg transform hover:scale-105"
                   >
                     পেমেন্ট জমা দিন
                   </button>
                   <button
                     type="button"
                     onClick={() => setIsPaymentModalOpen(false)}
-                    className="flex-1 bg-gray-200 text-gray-700 py-4 rounded-2xl hover:bg-gray-300 transition-all duration-300 font-bold text-lg"
+                   className="flex-1 bg-gray-200 text-gray-700 py-3 lg:py-4 rounded-2xl hover:bg-gray-300 transition-all duration-300 font-bold text-sm lg:text-lg"
                   >
                     বাতিল
                   </button>
