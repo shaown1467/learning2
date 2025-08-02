@@ -1,8 +1,8 @@
-import { initializeApp, FirebaseApp } from 'firebase/app';
-import { getAuth, Auth } from 'firebase/auth';
-import { getFirestore, Firestore } from 'firebase/firestore';
-import { getStorage, FirebaseStorage } from 'firebase/storage';
-import { initializeAppCheck, ReCaptchaV3Provider, AppCheck } from 'firebase/app-check';
+import { initializeApp, getApp, getApps } from 'firebase/app';
+import { getAuth } from 'firebase/auth';
+import { getFirestore } from 'firebase/firestore';
+import { getStorage } from 'firebase/storage';
+import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCwXCs0LEzqpO4lfWvXR6dGIQm8Nb-9FYc",
@@ -14,21 +14,31 @@ const firebaseConfig = {
   measurementId: "G-6L7CVRRB1J"
 };
 
-// অ্যাপ ইনিশিয়ালাইজ করুন
-const app: FirebaseApp = initializeApp(firebaseConfig);
+// অ্যাপটি আগে ইনিশিয়ালাইজ করা হয়েছে কিনা তা পরীক্ষা করুন
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
 
-// App Check ইনিশিয়ালাইজ করুন
+// App Check শুধুমাত্র ব্রাউজারে ইনিশিয়ালাইজ করুন
 if (typeof window !== 'undefined') {
-  initializeAppCheck(app, {
-    provider: new ReCaptchaV3Provider('6LcdXpgrAAAAAIiz9-fGWa8MjbJ8CeUF0SNONMWgJ'),
-    isTokenAutoRefreshEnabled: true
-  });
+  try {
+    // এখানে app._alreadyInitialized property চেক করা অপ্রয়োজনীয়, 
+    // কারণ initializeAppCheck নিজেই এটি হ্যান্ডেল করে।
+    // আমরা সরাসরি initializeAppCheck কল করব।
+    initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider('6LcdXpgrAAAAAIiz9-fGWa8MjbJ8CeUF0SNONMWgJ'),
+      isTokenAutoRefreshEnabled: true,
+    });
+  } catch (error) {
+    // যদি initializeAppCheck একাধিকবার কল হয়, তাহলে এই এররটি আসবে।
+    // আমরা এটিকে এখানে নিরাপদে ইগনোর করতে পারি কারণ অ্যাপটি অলরেডি কনফিগার করা আছে।
+    if (String(error).includes('appCheck/already-initialized')) {
+      console.warn('Firebase App Check has already been initialized.');
+    } else {
+      console.error('Error initializing Firebase App Check:', error);
+    }
+  }
 }
 
-// সার্ভিসগুলো ইনিশিয়ালাইজ করুন
-const auth: Auth = getAuth(app);
-const db: Firestore = getFirestore(app);
-const storage: FirebaseStorage = getStorage(app);
-
-// সার্ভিসগুলো এক্সপোর্ট করুন
-export { app, auth, db, storage };
+export const auth = getAuth(app);
+export const db = getFirestore(app);
+export const storage = getStorage(app);
+export { app }; // app এক্সপোর্ট করা হলো
