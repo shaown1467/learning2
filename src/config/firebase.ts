@@ -1,9 +1,8 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
-// App Check-এর জন্য নতুন দুটি লাইন নিচে যোগ করা হয়েছে
-import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
+import { initializeApp, FirebaseApp } from 'firebase/app';
+import { getAuth, Auth } from 'firebase/auth';
+import { getFirestore, Firestore } from 'firebase/firestore';
+import { getStorage, FirebaseStorage } from 'firebase/storage';
+import { initializeAppCheck, ReCaptchaV3Provider, AppCheck } from 'firebase/app-check';
 
 const firebaseConfig = {
   apiKey: "AIzaSyCwXCs0LEzqpO4lfWvXR6dGIQm8Nb-9FYc",
@@ -15,18 +14,21 @@ const firebaseConfig = {
   measurementId: "G-6L7CVRRB1J"
 };
 
-const app = initializeApp(firebaseConfig);
+// অ্যাপ ইনিশিয়ালাইজ করুন
+const app: FirebaseApp = initializeApp(firebaseConfig);
 
-// App Check ইনিশিয়ালাইজ করার জন্য এই কোডটুকু যোগ করা হয়েছে
+// App Check ইনিশিয়ালাইজ করুন
 if (typeof window !== 'undefined') {
-  const appCheck = initializeAppCheck(app, {
-    // আপনার Site Key এখানে সরাসরি বসিয়ে দেওয়া হয়েছে
-    provider: new ReCaptchaV3Provider('6LcdXpgrAAAAAIIz9-fGWaBMjJBCeUF0SNONMWgJ'),
+  initializeAppCheck(app, {
+    provider: new ReCaptchaV3Provider('6LcdXpgrAAAAAIiz9-fGWa8MjbJ8CeUF0SNONMWgJ'),
     isTokenAutoRefreshEnabled: true
   });
 }
 
-export const auth = getAuth(app);
-export const db = getFirestore(app);
-export const storage = getStorage(app);
-export default app;
+// সার্ভিসগুলো ইনিশিয়ালাইজ করুন
+const auth: Auth = getAuth(app);
+const db: Firestore = getFirestore(app);
+const storage: FirebaseStorage = getStorage(app);
+
+// সার্ভিসগুলো এক্সপোর্ট করুন
+export { app, auth, db, storage };
