@@ -423,8 +423,22 @@ export const CommunitySection: React.FC = () => {
                           <a
                             key={index}
                             href={file.url}
-                            download={file.name}
+                            target="_blank"
+                            rel="noopener noreferrer"
                             className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                            onClick={(e) => {
+                              // Force download for certain file types
+                              if (file.type && !file.type.startsWith('image/') && !file.type.startsWith('video/')) {
+                                e.preventDefault();
+                                const link = document.createElement('a');
+                                link.href = file.url;
+                                link.download = file.name || 'download';
+                                link.target = '_blank';
+                                document.body.appendChild(link);
+                                link.click();
+                                document.body.removeChild(link);
+                              }
+                            }}
                           >
                             <FileText className="h-5 w-5 text-blue-600" />
                             <span className="flex-1 text-gray-900">{file.name}</span>
@@ -708,13 +722,18 @@ export const CommunitySection: React.FC = () => {
                     {newPost.files.map((file) => (
                       <div key={file.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
                         <span className="text-sm">{file.name}</span>
-                        <button
-                          type="button"
-                          onClick={() => removeFile(file.id)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <X className="h-4 w-4" />
-                        </button>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-xs text-gray-500">
+                            {formatFileSize(file.size)}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => removeFile(file.id)}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -743,4 +762,13 @@ export const CommunitySection: React.FC = () => {
       )}
     </div>
   );
+};
+
+// Helper function to format file size
+const formatFileSize = (bytes: number): string => {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };
