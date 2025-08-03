@@ -11,8 +11,8 @@ export const uploadFile = async (file: File, path: string): Promise<string> => {
       throw new Error('User must be authenticated to upload files');
     }
 
-    // Create a unique filename with user ID
-    const fileName = `${auth.currentUser.uid}_${Date.now()}_${file.name}`;
+    // Simplified file path without user ID to avoid CORS issues
+    const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
     const fileRef = ref(storage, `${path}/${fileName}`);
     
     // Upload file with metadata
@@ -26,19 +26,23 @@ export const uploadFile = async (file: File, path: string): Promise<string> => {
     
     const snapshot = await uploadBytes(fileRef, file, metadata);
     const downloadURL = await getDownloadURL(snapshot.ref);
+    
+    console.log('File uploaded successfully:', downloadURL);
     return downloadURL;
   } catch (error) {
     console.error('File upload error:', error);
     
     // More specific error messages
-    if (error.code === 'storage/unauthorized') {
+    if (error?.code === 'storage/unauthorized') {
       toast.error('ফাইল আপলোড করার অনুমতি নেই। অনুগ্রহ করে লগইন করুন।');
-    } else if (error.code === 'storage/quota-exceeded') {
+    } else if (error?.code === 'storage/quota-exceeded') {
       toast.error('স্টোরেজ সীমা অতিক্রম করেছে।');
-    } else if (error.code === 'storage/invalid-format') {
+    } else if (error?.code === 'storage/invalid-format') {
       toast.error('অবৈধ ফাইল ফরম্যাট।');
+    } else if (error?.code === 'storage/unknown') {
+      toast.error('Firebase Storage এ সমস্যা। Rules চেক করুন।');
     } else {
-      toast.error('ফাইল আপলোড করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।');
+      toast.error(`ফাইল আপলোড এরর: ${error?.message || 'অজানা সমস্যা'}`);
     }
     throw error;
   }
