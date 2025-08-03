@@ -13,7 +13,7 @@ export const uploadFile = async (file: File, path: string): Promise<string> => {
 
     // Create a unique filename with user ID
     const fileName = `${auth.currentUser.uid}_${Date.now()}_${file.name}`;
-    const fileRef = ref(storage, `${path}/${Date.now()}_${file.name}`);
+    const fileRef = ref(storage, `${path}/${fileName}`);
     
     // Upload file with metadata
     const metadata = {
