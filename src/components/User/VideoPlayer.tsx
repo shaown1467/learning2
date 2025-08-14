@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CheckCircle, Award, Play, Lock, FileText, ExternalLink } from 'lucide-react';
-import { useFirestore } from '../../hooks/useFirestore';
+import { useSupabase } from '../../hooks/useSupabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { Video, Quiz, UserProgress, UserProfile, Topic } from '../../types';
 import YouTubePlayer from '../Common/YouTubePlayer';
@@ -13,9 +13,9 @@ interface VideoPlayerProps {
 
 const VideoPlayer: React.FC<VideoPlayerProps> = ({ video, onVideoComplete }) => {
   const { currentUser } = useAuth();
-  const { documents: quizzes } = useFirestore('quizzes');
-  const { documents: userProgress, addDocument: addProgress, updateDocument: updateProgress } = useFirestore('userProgress');
-  const { documents: userProfiles, updateDocument: updateUserProfile } = useFirestore('userProfiles');
+  const { documents: quizzes } = useSupabase('quizzes');
+  const { documents: userProgress, addDocument: addProgress, updateDocument: updateProgress } = useSupabase('user_progress');
+  const { documents: userProfiles, updateDocument: updateUserProfile } = useSupabase('user_profiles');
   const [isPlayerOpen, setIsPlayerOpen] = useState(false);
   const [showCompleteModal, setShowCompleteModal] = useState(false);
   const [showQuizModal, setShowQuizModal] = useState(false);
@@ -26,10 +26,10 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ video, onVideoComplete }) => 
     workLink: ''
   });
 
-  const currentUserProfile = userProfiles.find((profile: UserProfile) => profile.userId === currentUser?.uid);
-  const videoQuiz = quizzes.find((quiz: Quiz) => quiz.videoId === video.id);
+  const currentUserProfile = userProfiles.find((profile: UserProfile) => profile.user_id === currentUser?.id);
+  const videoQuiz = quizzes.find((quiz: Quiz) => quiz.video_id === video.id);
   const userVideoProgress = userProgress.find((progress: UserProgress) => 
-    progress.userId === currentUser?.uid && progress.videoId === video.id
+    progress.user_id === currentUser?.id && progress.video_id === video.id
   );
 
   const isVideoCompleted = userVideoProgress?.watched || false;
@@ -45,16 +45,16 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ video, onVideoComplete }) => 
 
     try {
       const progressData = {
-        userId: currentUser.uid,
-        videoId: video.id,
+        user_id: currentUser.id,
+        video_id: video.id,
         watched: false, // Will be set to true after quiz (if exists) or immediately
-        canAccess: true, // All videos are now accessible
+        can_access: true, // All videos are now accessible
         summary: completionForm.summary,
-        workLink: completionForm.workLink,
-        quizScore: null,
-        quizPassed: false,
-        quizAttempts: 0,
-        submittedAt: new Date()
+        work_link: completionForm.workLink,
+        quiz_score: null,
+        quiz_passed: false,
+        quiz_attempts: 0,
+        submitted_at: new Date()
       };
 
       if (userVideoProgress) {
@@ -86,12 +86,12 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ video, onVideoComplete }) => 
         if (currentUserProfile) {
           await updateUserProfile(currentUserProfile.id, {
             points: currentUserProfile.points + 5, // 5 points for completing video
-            completedVideos: currentUserProfile.completedVideos + 1
+            completed_videos: currentUserProfile.completed_videos + 1
           });
           
           // Update access for next videos in the topic
           const topicVideos = videos
-            .filter((v: Video) => v.topicId === video.topicId)
+            .filter((v: Video) => v.topic_id === video.topic_id)
             .sort((a: Video, b: Video) => a.order - b.order);
           
           const currentVideoIndex = topicVideos.findIndex((v: Video) => v.id === video.id);
@@ -129,9 +129,9 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ video, onVideoComplete }) => 
       const progressData = {
         ...userVideoProgress,
         watched: passed, // Only mark as watched if quiz is passed
-        quizScore: score,
-        quizPassed: passed,
-        quizAttempts: (userVideoProgress?.quizAttempts || 0) + 1
+        quiz_score: score,
+        quiz_passed: passed,
+        quiz_attempts: (userVideoProgress?.quiz_attempts || 0) + 1
       };
 
       if (userVideoProgress) {
@@ -142,7 +142,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ video, onVideoComplete }) => 
       if (passed && currentUserProfile) {
         await updateUserProfile(currentUserProfile.id, {
           points: currentUserProfile.points + videoQuiz.points,
-          completedVideos: currentUserProfile.completedVideos + 1
+          completed_videos: currentUserProfile.completed_videos + 1
         });
         toast.success(`অভিনন্দন! আপনি ${videoQuiz.points} পয়েন্ট পেয়েছেন!`);
       }
@@ -171,7 +171,7 @@ const VideoPlayer: React.FC<VideoPlayerProps> = ({ video, onVideoComplete }) => 
       if (currentUserProfile) {
         await updateUserProfile(currentUserProfile.id, {
           points: currentUserProfile.points + 5, // 5 points for completing video
-          completedVideos: currentUserProfile.completedVideos + 1
+          completed_videos: currentUserProfile.completed_videos + 1
         });
       }
 

@@ -1,46 +1,46 @@
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { storage } from '../config/firebase';
-import { getAuth } from 'firebase/auth';
+import { supabase } from '../config/supabase';
+import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
-export const uploadFile = async (file: File, path: string): Promise<string> => {
+export const uploadFile = async (file: File, bucket: string = 'uploads'): Promise<string> => {
   try {
     // Check if user is authenticated
-    const auth = getAuth();
-    if (!auth.currentUser) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
       throw new Error('User must be authenticated to upload files');
     }
 
-    // Simplified file path without user ID to avoid CORS issues
-    const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-    const fileRef = ref(storage, `${path}/${fileName}`);
+    // Create unique filename
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${user.id}/${Date.now()}.${fileExt}`;
     
-    // Upload file with metadata
-    const metadata = {
-      contentType: file.type,
-      customMetadata: {
-        uploadedBy: auth.currentUser.uid,
-        originalName: file.name
-      }
-    };
+    // Upload file to Supabase Storage
+    const { data, error } = await supabase.storage
+      .from(bucket)
+      .upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
     
-    const snapshot = await uploadBytes(fileRef, file, metadata);
-    const downloadURL = await getDownloadURL(snapshot.ref);
+    if (error) throw error;
     
-    console.log('File uploaded successfully:', downloadURL);
-    return downloadURL;
-  } catch (error) {
+    // Get public URL
+    const { data: { publicUrl } } = supabase.storage
+      .from(bucket)
+      .getPublicUrl(fileName);
+    
+    console.log('File uploaded successfully:', publicUrl);
+    return publicUrl;
+  } catch (error: any) {
     console.error('File upload error:', error);
     
     // More specific error messages
-    if (error?.code === 'storage/unauthorized') {
+    if (error?.message?.includes('not authenticated')) {
       toast.error('ফাইল আপলোড করার অনুমতি নেই। অনুগ্রহ করে লগইন করুন।');
-    } else if (error?.code === 'storage/quota-exceeded') {
+    } else if (error?.message?.includes('quota')) {
       toast.error('স্টোরেজ সীমা অতিক্রম করেছে।');
-    } else if (error?.code === 'storage/invalid-format') {
+    } else if (error?.message?.includes('format')) {
       toast.error('অবৈধ ফাইল ফরম্যাট।');
-    } else if (error?.code === 'storage/unknown') {
-      toast.error('Firebase Storage এ সমস্যা। Rules চেক করুন।');
     } else {
       toast.error(`ফাইল আপলোড এরর: ${error?.message || 'অজানা সমস্যা'}`);
     }
@@ -48,16 +48,24 @@ export const uploadFile = async (file: File, path: string): Promise<string> => {
   }
 };
 
-export const deleteFile = async (url: string): Promise<void> => {
+export const deleteFile = async (url: string, bucket: string = 'uploads'): Promise<void> => {
   try {
     // Check if user is authenticated
-    const auth = getAuth();
-    if (!auth.currentUser) {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
       throw new Error('User must be authenticated to delete files');
     }
 
-    const fileRef = ref(storage, url);
-    await deleteObject(fileRef);
+    // Extract file path from URL
+    const urlParts = url.split('/');
+    const fileName = urlParts[urlParts.length - 1];
+    const filePath = `${user.id}/${fileName}`;
+
+    const { error } = await supabase.storage
+      .from(bucket)
+      .remove([filePath]);
+
+    if (error) throw error;
   } catch (error) {
     console.error('File delete error:', error);
     toast.error('ফাইল ডিলিট করতে সমস্যা হয়েছে।');

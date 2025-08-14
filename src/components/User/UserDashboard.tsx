@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Play, BookOpen, Award, Clock, MessageSquare, Calendar, Trophy, Download, File, Menu, X, Home, Users, Target } from 'lucide-react';
-import { useFirestore } from '../../hooks/useFirestore';
+import { useSupabase } from '../../hooks/useSupabase';
 import { useStats } from '../../hooks/useStats';
 import { Topic, Video, UserProgress } from '../../types';
 import { getThumbnailUrl } from '../../utils/youtube';
@@ -14,9 +14,9 @@ import Navbar from '../Layout/Navbar';
 import { useAuth } from '../../contexts/AuthContext';
 
 const UserDashboard: React.FC = () => {
-  const { documents: topics } = useFirestore('topics', 'order');
-  const { documents: videos } = useFirestore('videos', 'order');
-  const { documents: userProgress, addDocument: addProgress } = useFirestore('userProgress');
+  const { documents: topics } = useSupabase('topics', 'order');
+  const { documents: videos } = useSupabase('videos', 'order');
+  const { documents: userProgress, addDocument: addProgress } = useSupabase('user_progress');
   const { stats } = useStats();
   const [activeSection, setActiveSection] = useState('courses');
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null);
@@ -36,14 +36,14 @@ const UserDashboard: React.FC = () => {
       
       try {
         await addProgress({
-          userId: currentUser.uid,
-          videoId: video.id,
+          user_id: currentUser.id,
+          video_id: video.id,
           watched: false,
-          canAccess: true, // All videos are now accessible
+          can_access: true, // All videos are now accessible
           summary: '',
-          workLink: '',
-          quizPassed: false,
-          quizAttempts: 0
+          work_link: '',
+          quiz_passed: false,
+          quiz_attempts: 0
         });
       } catch (error) {
         console.error('Error creating progress:', error);
@@ -60,7 +60,7 @@ const UserDashboard: React.FC = () => {
   };
 
   const getTopicVideos = (topicId: string) => {
-    return videos.filter((video: Video) => video.topicId === topicId);
+    return videos.filter((video: Video) => video.topic_id === topicId);
   };
 
   const getTopicProgress = (topicId: string) => {

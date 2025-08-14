@@ -1,12 +1,11 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, signInWithEmailAndPassword, signOut, onAuthStateChanged, getAuth } from 'firebase/auth';
-import { doc, setDoc, getDoc, deleteDoc, collection, query, where, getDocs } from 'firebase/firestore';
-import { auth } from '../config/firebase';
-import { db } from '../config/firebase';
+import { User, Session } from '@supabase/supabase-js';
+import { supabase } from '../config/supabase';
 import toast from 'react-hot-toast';
 
 interface AuthContextType {
   currentUser: User | null;
+  session: Session | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   loading: boolean;
@@ -25,6 +24,7 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
   const isAdmin = currentUser?.email === 'admin@admin.com';
@@ -32,19 +32,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string) => {
     try {
       // Check if user is already logged in on another device
-      const sessionQuery = query(
-        collection(db, 'userSessions'),
-        where('email', '==', email)
-      );
-      const sessionSnapshot = await getDocs(sessionQuery);
-      
-      if (!sessionSnapshot.empty) {
-        // User is already logged in on another device
-        const existingSession = sessionSnapshot.docs[0];
-        const sessionData = existingSession.data();
-        
-        // Check if session is still active (less than 24 hours old)
-        const sessionTime = sessionData.createdAt?.toDate();
+      const { data: existingSessions } = await supabase
+        .from('user_sessions')
+        .select('*')
+        .eq('email', email);
+
+      if (existingSessions && existingSessions.length > 0) {
+        const existingSession = existingSessions[0];
+        const sessionTime = new Date(existingSession.created_at);
         const now = new Date();
         const hoursDiff = (now.getTime() - sessionTime.getTime()) / (1000 * 60 * 60);
         
@@ -52,21 +47,47 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           throw new Error('এই অ্যাকাউন্ট অন্য ডিভাইসে লগইন করা আছে। প্রথমে সেখান থেকে লগআউট করুন।');
         } else {
           // Remove old session
-          await deleteDoc(existingSession.ref);
+          await supabase
+            .from('user_sessions')
+            .delete()
+            .eq('id', existingSession.id);
         }
       }
       
-      await signInWithEmailAndPassword(auth, email, password);
-      
-      // Create new session record
-      const user = getAuth().currentUser;
-      if (user) {
-        await setDoc(doc(db, 'userSessions', user.uid), {
-          email: user.email,
-          userId: user.uid,
-          createdAt: new Date(),
-          deviceInfo: navigator.userAgent
-        });
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (error) throw error;
+
+      if (data.user) {
+        // Create new session record
+        await supabase
+          .from('user_sessions')
+          .insert({
+            user_id: data.user.id,
+            email: data.user.email,
+            device_info: navigator.userAgent
+          });
+
+        // Create or update user profile
+        const { data: existingProfile } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('user_id', data.user.id)
+          .single();
+
+        if (!existingProfile) {
+          await supabase
+            .from('user_profiles')
+            .insert({
+              user_id: data.user.id,
+              display_name: data.user.email?.split('@')[0] || 'ব্যবহারকারী',
+              points: 0,
+              completed_videos: 0
+            });
+        }
       }
       
       toast.success('সফলভাবে লগইন হয়েছে!');
@@ -84,10 +105,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       // Remove session record
       if (currentUser) {
-        await deleteDoc(doc(db, 'userSessions', currentUser.uid));
+        await supabase
+          .from('user_sessions')
+          .delete()
+          .eq('user_id', currentUser.id);
       }
       
-      await signOut(auth);
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
       toast.success('সফলভাবে লগআউট হয়েছে!');
     } catch (error: any) {
       toast.error('লগআউট করতে সমস্যা হয়েছে!');
@@ -96,16 +122,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setCurrentUser(session?.user ?? null);
       setLoading(false);
     });
 
-    return unsubscribe;
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setCurrentUser(session?.user ?? null);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   const value = {
     currentUser,
+    session,
     login,
     logout,
     loading,

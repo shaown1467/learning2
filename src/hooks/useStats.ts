@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { collection, onSnapshot, query } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { supabase } from '../config/supabase';
 import { UserStats } from '../types';
+import { useAuth } from '../contexts/AuthContext';
 
 export const useStats = () => {
+  const { currentUser } = useAuth();
   const [stats, setStats] = useState<UserStats>({
     totalUsers: 0,
     totalVideos: 0,
@@ -15,48 +16,56 @@ export const useStats = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribes: (() => void)[] = [];
-
-    // Count users
-    const usersQuery = query(collection(db, 'userProfiles'));
-    const unsubUsers = onSnapshot(usersQuery, (snapshot) => {
-      setStats(prev => ({ ...prev, totalUsers: snapshot.size }));
-    });
-    unsubscribes.push(unsubUsers);
-
-    // Count videos
-    const videosQuery = query(collection(db, 'videos'));
-    const unsubVideos = onSnapshot(videosQuery, (snapshot) => {
-      setStats(prev => ({ ...prev, totalVideos: snapshot.size }));
-    });
-    unsubscribes.push(unsubVideos);
-
-    // Count topics
-    const topicsQuery = query(collection(db, 'topics'));
-    const unsubTopics = onSnapshot(topicsQuery, (snapshot) => {
-      setStats(prev => ({ ...prev, totalTopics: snapshot.size }));
-    });
-    unsubscribes.push(unsubTopics);
-
-    // Count posts
-    const postsQuery = query(collection(db, 'posts'));
-    const unsubPosts = onSnapshot(postsQuery, (snapshot) => {
-      setStats(prev => ({ ...prev, totalPosts: snapshot.size }));
-    });
-    unsubscribes.push(unsubPosts);
-
-    // Count events
-    const eventsQuery = query(collection(db, 'events'));
-    const unsubEvents = onSnapshot(eventsQuery, (snapshot) => {
-      setStats(prev => ({ ...prev, totalEvents: snapshot.size }));
+    if (!currentUser) {
       setLoading(false);
-    });
-    unsubscribes.push(unsubEvents);
+      return;
+    }
 
-    return () => {
-      unsubscribes.forEach(unsub => unsub());
-    };
-  }, []);
+    fetchStats();
+  }, [currentUser]);
 
+  const fetchStats = async () => {
+    try {
+      setLoading(true);
+      
+      // Count users
+      const { count: usersCount } = await supabase
+        .from('user_profiles')
+        .select('*', { count: 'exact', head: true });
+
+      // Count videos
+      const { count: videosCount } = await supabase
+        .from('videos')
+        .select('*', { count: 'exact', head: true });
+
+      // Count topics
+      const { count: topicsCount } = await supabase
+        .from('topics')
+        .select('*', { count: 'exact', head: true });
+
+      // Count posts
+      const { count: postsCount } = await supabase
+        .from('posts')
+        .select('*', { count: 'exact', head: true });
+
+      // Count events
+      const { count: eventsCount } = await supabase
+        .from('events')
+        .select('*', { count: 'exact', head: true });
+
+      setStats({
+        totalUsers: usersCount || 0,
+        totalVideos: videosCount || 0,
+        totalTopics: topicsCount || 0,
+        totalPosts: postsCount || 0,
+        totalEvents: eventsCount || 0,
+        averageProgress: 0
+      });
+    } catch (error) {
+      console.error('Error fetching stats:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
   return { stats, loading };
 };
