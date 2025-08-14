@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Heart, MessageCircle, Share2, Upload, X, Play, Download, FileText, Image as ImageIcon, Camera, Plus } from 'lucide-react';
-import { useFirestore } from '../../hooks/useFirestore';
+import { useSupabase } from '../../hooks/useSupabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { uploadFile } from '../../utils/fileUpload';
 import { extractVideoId } from '../../utils/youtube';
@@ -22,29 +22,29 @@ export const CommunitySection: React.FC = () => {
   const [commentTexts, setCommentTexts] = useState<{ [key: string]: string }>({});
 
   const { currentUser } = useAuth();
-  const { documents: posts, addDocument: addPost, updateDocument: updatePost } = useFirestore('posts', 'createdAt');
-  const { documents: comments, addDocument: addComment } = useFirestore('comments', 'createdAt');
-  const { documents: categories } = useFirestore('categories', 'createdAt');
-  const { documents: userProfiles } = useFirestore('userProfiles');
+  const { documents: posts, addDocument: addPost, updateDocument: updatePost } = useSupabase('posts', 'created_at', false);
+  const { documents: comments, addDocument: addComment } = useSupabase('comments', 'created_at', false);
+  const { documents: categories } = useSupabase('categories', 'created_at', false);
+  const { documents: userProfiles } = useSupabase('user_profiles');
 
-  const currentUserProfile = userProfiles.find((profile: UserProfile) => profile.userId === currentUser?.uid);
+  const currentUserProfile = userProfiles.find((profile: UserProfile) => profile.user_id === currentUser?.id);
 
   // Filter approved posts and sort by likes and creation date
   const approvedPosts = posts
     .filter((post: Post) => post.approved)
-    .filter((post: Post) => selectedCategory === 'all' || post.categoryId === selectedCategory)
+    .filter((post: Post) => selectedCategory === 'all' || post.category_id === selectedCategory)
     .sort((a: Post, b: Post) => {
       // First sort by pinned posts
       if (a.pinned && !b.pinned) return -1;
       if (!a.pinned && b.pinned) return 1;
       
       // Then by likes count
-      const aLikes = a.likesCount || 0;
-      const bLikes = b.likesCount || 0;
+      const aLikes = a.likes_count || 0;
+      const bLikes = b.likes_count || 0;
       if (aLikes !== bLikes) return bLikes - aLikes;
       
       // Finally by creation date
-      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     });
 
   const resetForm = () => {
@@ -71,18 +71,18 @@ export const CommunitySection: React.FC = () => {
       const postData = {
         title: newPost.title,
         content: newPost.content,
-        youtubeUrl: newPost.youtubeUrl || '',
-        imageUrl: newPost.imageUrl || '',
+        youtube_url: newPost.youtubeUrl || '',
+        image_url: newPost.imageUrl || '',
         files: newPost.files || [],
-        categoryId: newPost.categoryId,
-        authorId: currentUser.uid,
-        authorName: currentUserProfile?.displayName || currentUser.email?.split('@')[0] || 'ব্যবহারকারী',
-        authorAvatar: currentUserProfile?.avatar || '',
+        category_id: newPost.categoryId,
+        author_id: currentUser.id,
+        author_name: currentUserProfile?.display_name || currentUser.email?.split('@')[0] || 'ব্যবহারকারী',
+        author_avatar: currentUserProfile?.avatar || '',
         approved: false, // Needs admin approval
         pinned: false,
         likes: [],
-        likesCount: 0,
-        commentsCount: 0
+        likes_count: 0,
+        comments_count: 0
       };
 
       await addPost(postData);
@@ -108,7 +108,7 @@ export const CommunitySection: React.FC = () => {
 
     setUploading(true);
     try {
-      const url = await uploadFile(file, 'community-images');
+      const url = await uploadFile(file, 'images');
       setNewPost({ ...newPost, imageUrl: url });
       toast.success('ছবি আপলোড হয়েছে!');
     } catch (error) {
@@ -125,7 +125,7 @@ export const CommunitySection: React.FC = () => {
     setUploading(true);
     try {
       const uploadPromises = files.map(async (file) => {
-        const url = await uploadFile(file, 'community-files');
+        const url = await uploadFile(file, 'files');
         return {
           id: Date.now() + Math.random(),
           name: file.name,
@@ -163,14 +163,14 @@ export const CommunitySection: React.FC = () => {
       if (!post) return;
 
       const likes = post.likes || [];
-      const isLiked = likes.includes(currentUser.uid);
+      const isLiked = likes.includes(currentUser.id);
       const updatedLikes = isLiked 
-        ? likes.filter((id: string) => id !== currentUser.uid)
-        : [...likes, currentUser.uid];
+        ? likes.filter((id: string) => id !== currentUser.id)
+        : [...likes, currentUser.id];
 
       await updatePost(postId, { 
         likes: updatedLikes,
-        likesCount: updatedLikes.length
+        likes_count: updatedLikes.length
       });
     } catch (error) {
       console.error('Error updating like:', error);
@@ -183,10 +183,10 @@ export const CommunitySection: React.FC = () => {
 
     try {
       await addComment({
-        postId,
-        authorId: currentUser.uid,
-        authorName: currentUserProfile?.displayName || currentUser.email?.split('@')[0] || 'ব্যবহারকারী',
-        authorAvatar: currentUserProfile?.avatar || '',
+        post_id: postId,
+        author_id: currentUser.id,
+        author_name: currentUserProfile?.display_name || currentUser.email?.split('@')[0] || 'ব্যবহারকারী',
+        author_avatar: currentUserProfile?.avatar || '',
         content: commentTexts[postId]
       });
 
@@ -194,7 +194,7 @@ export const CommunitySection: React.FC = () => {
       const post = posts.find((p: Post) => p.id === postId);
       if (post) {
         await updatePost(postId, {
-          commentsCount: post.commentsCount + 1
+          comments_count: post.comments_count + 1
         });
       }
 
@@ -217,11 +217,11 @@ export const CommunitySection: React.FC = () => {
   };
 
   const getPostComments = (postId: string) => {
-    return comments.filter((comment: Comment) => comment.postId === postId);
+    return comments.filter((comment: Comment) => comment.post_id === postId);
   };
 
   const isPostLiked = (post: Post) => {
-    return currentUser ? post.likes?.includes(currentUser.uid) : false;
+    return currentUser ? post.likes?.includes(currentUser.id) : false;
   };
 
   const formatTimeAgo = (date: Date) => {
@@ -259,7 +259,7 @@ export const CommunitySection: React.FC = () => {
   };
 
   const getCategoryPostCount = (categoryId: string) => {
-    return posts.filter((post: Post) => post.approved && post.categoryId === categoryId).length;
+    return posts.filter((post: Post) => post.approved && post.category_id === categoryId).length;
   };
 
   return (
@@ -378,13 +378,13 @@ export const CommunitySection: React.FC = () => {
                         <h3 className="font-semibold text-gray-900">{post.authorName}</h3>
                         <div className="flex items-center space-x-2">
                           <span className="text-xs text-gray-500">
-                            {formatTimeAgo(new Date(post.createdAt))}
+                            {formatTimeAgo(new Date(post.created_at))}
                           </span>
                           <span 
                             className="px-2 py-1 rounded-full text-xs font-medium text-white"
-                            style={{ backgroundColor: getCategoryColor(post.categoryId) }}
+                            style={{ backgroundColor: getCategoryColor(post.category_id) }}
                           >
-                            {getCategoryName(post.categoryId)}
+                            {getCategoryName(post.category_id)}
                           </span>
                           {post.pinned && (
                             <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">
@@ -401,13 +401,13 @@ export const CommunitySection: React.FC = () => {
                   <p className="text-gray-700 mb-4 leading-relaxed">{post.content}</p>
 
                   {/* YouTube Video */}
-                  {post.youtubeUrl && renderYouTubeEmbed(post.youtubeUrl)}
+                  {post.youtube_url && renderYouTubeEmbed(post.youtube_url)}
 
                   {/* Image */}
-                  {post.imageUrl && (
+                  {post.image_url && (
                     <div className="mb-4">
                       <img
-                        src={post.imageUrl}
+                        src={post.image_url}
                         alt="Post image"
                         className="w-full h-64 object-cover rounded-lg"
                       />
@@ -461,12 +461,12 @@ export const CommunitySection: React.FC = () => {
                         }`}
                       >
                         <Heart className={`h-4 w-4 ${isPostLiked(post) ? 'fill-current' : ''}`} />
-                        <span className="text-sm font-medium">{post.likesCount || 0}</span>
+                        <span className="text-sm font-medium">{post.likes_count || 0}</span>
                       </button>
 
                       <div className="flex items-center space-x-2 text-gray-600">
                         <MessageCircle className="h-4 w-4" />
-                        <span className="text-sm font-medium">{post.commentsCount || 0}</span>
+                        <span className="text-sm font-medium">{post.comments_count || 0}</span>
                       </div>
                     </div>
 
@@ -480,24 +480,24 @@ export const CommunitySection: React.FC = () => {
                     <div className="mt-4 space-y-3 border-t border-gray-100 pt-4">
                       {postComments.map((comment: Comment) => (
                         <div key={comment.id} className="flex space-x-3">
-                          {comment.authorAvatar ? (
+                          {comment.author_avatar ? (
                             <img
-                              src={comment.authorAvatar}
-                              alt={comment.authorName}
+                              src={comment.author_avatar}
+                              alt={comment.author_name}
                               className="w-8 h-8 rounded-full object-cover"
                             />
                           ) : (
                             <div className="w-8 h-8 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center">
                               <span className="text-white text-xs font-semibold">
-                                {comment.authorName.charAt(0).toUpperCase()}
+                                {comment.author_name.charAt(0).toUpperCase()}
                               </span>
                             </div>
                           )}
                           <div className="flex-1 bg-gray-50 rounded-lg p-3">
                             <div className="flex items-center space-x-2 mb-1">
-                              <p className="font-medium text-gray-900 text-sm">{comment.authorName}</p>
+                              <p className="font-medium text-gray-900 text-sm">{comment.author_name}</p>
                               <span className="text-xs text-gray-500">
-                                {formatTimeAgo(new Date(comment.createdAt))}
+                                {formatTimeAgo(new Date(comment.created_at))}
                               </span>
                             </div>
                             <p className="text-gray-700 text-sm">{comment.content}</p>
