@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Eye, CheckCircle, Clock, Award, User, FileText, ExternalLink } from 'lucide-react';
-import { useFirestore } from '../../hooks/useFirestore';
+import { useSupabase } from '../../hooks/useSupabase';
 import { UserProgress, Video, Topic, UserProfile } from '../../types';
 
 const ProgressManager: React.FC = () => {
-  const { documents: userProgress } = useFirestore('userProgress', 'submittedAt');
-  const { documents: videos } = useFirestore('videos', 'order');
-  const { documents: topics } = useFirestore('topics', 'order');
-  const { documents: userProfiles } = useFirestore('userProfiles');
+  const { documents: userProgress } = useSupabase('user_progress', 'submitted_at', false);
+  const { documents: videos } = useSupabase('videos', 'order');
+  const { documents: topics } = useSupabase('topics', 'order');
+  const { documents: userProfiles } = useSupabase('user_profiles');
   const [selectedProgress, setSelectedProgress] = useState<UserProgress | null>(null);
   const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'completed'>('all');
 

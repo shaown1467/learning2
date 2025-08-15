@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Plus, Edit, Trash2, Calendar, Clock, ExternalLink } from 'lucide-react';
-import { useFirestore } from '../../hooks/useFirestore';
+import { useSupabase } from '../../hooks/useSupabase';
 import { Event } from '../../types';
 import toast from 'react-hot-toast';
 
 const CalendarManager: React.FC = () => {
-  const { documents: events, addDocument, updateDocument, deleteDocument } = useFirestore('events', 'date');
+  const { documents: events, addDocument, updateDocument, deleteDocument } = useSupabase('events', 'date');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEvent, setEditingEvent] = useState<Event | null>(null);
   const [formData, setFormData] = useState({

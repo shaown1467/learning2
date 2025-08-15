@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Plus, Edit, Trash2, GripVertical, Upload, Image } from 'lucide-react';
-import { useFirestore } from '../../hooks/useFirestore';
+import { useSupabase } from '../../hooks/useSupabase';
 import { Topic } from '../../types';
 import { uploadFile } from '../../utils/fileUpload';
 import toast from 'react-hot-toast';
 
 const TopicManager: React.FC = () => {
-  const { documents: topics, addDocument, updateDocument, deleteDocument } = useFirestore('topics', 'order');
+  const { documents: topics, addDocument, updateDocument, deleteDocument } = useSupabase('topics', 'order');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTopic, setEditingTopic] = useState<Topic | null>(null);
   const [formData, setFormData] = useState({

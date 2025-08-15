@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Plus, Edit, Trash2, Trophy, Calendar, Users, CreditCard, Check, X, RefreshCw } from 'lucide-react';
-import { useFirestore } from '../../hooks/useFirestore';
+import { useSupabase } from '../../hooks/useSupabase';
 import { Challenge, ChallengeSubmission, ChallengePayment } from '../../types';
 import toast from 'react-hot-toast';
 
 const ChallengeManager: React.FC = () => {
-  const { documents: challenges, addDocument: addChallenge, updateDocument: updateChallenge, deleteDocument: deleteChallenge } = useFirestore('challenges', 'createdAt');
-  const { documents: submissions, updateDocument: updateSubmission, deleteDocument: deleteSubmission } = useFirestore('challengeSubmissions', 'createdAt');
-  const { documents: payments, updateDocument: updatePayment } = useFirestore('challengePayments', 'createdAt');
+  const { documents: challenges, addDocument: addChallenge, updateDocument: updateChallenge, deleteDocument: deleteChallenge } = useSupabase('challenges', 'created_at', false);
+  const { documents: submissions, updateDocument: updateSubmission, deleteDocument: deleteSubmission } = useSupabase('challenge_submissions', 'created_at', false);
+  const { documents: payments, updateDocument: updatePayment } = useSupabase('challenge_payments', 'created_at', false);
   
   const [activeTab, setActiveTab] = useState('challenges');
   const [isChallengeModalOpen, setIsChallengeModalOpen] = useState(false);

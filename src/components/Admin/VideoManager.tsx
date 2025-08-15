@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Plus, Edit, Trash2, Play, ExternalLink, Upload, File, Download } from 'lucide-react';
-import { useFirestore } from '../../hooks/useFirestore';
+import { useSupabase } from '../../hooks/useSupabase';
 import { Video, Topic } from '../../types';
 import { extractVideoId, getThumbnailUrl } from '../../utils/youtube';
 import { uploadFile, formatFileSize, getFileIcon } from '../../utils/fileUpload';
@@ -8,8 +8,8 @@ import YouTubePlayer from '../Common/YouTubePlayer';
 import toast from 'react-hot-toast';
 
 const VideoManager: React.FC = () => {
-  const { documents: videos, addDocument, updateDocument, deleteDocument } = useFirestore('videos', 'order');
-  const { documents: topics } = useFirestore('topics', 'order');
+  const { documents: videos, addDocument, updateDocument, deleteDocument } = useSupabase('videos', 'order');
+  const { documents: topics } = useSupabase('topics', 'order');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingVideo, setEditingVideo] = useState<Video | null>(null);
   const [playerState, setPlayerState] = useState({ isOpen: false, videoId: '', title: '' });

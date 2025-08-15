@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Plus, Edit, Trash2, Eye, Check, X, Pin, PinOff, MessageSquare, Heart } from 'lucide-react';
-import { useFirestore } from '../../hooks/useFirestore';
+import { useSupabase } from '../../hooks/useSupabase';
 import { Category, Post } from '../../types';
 import toast from 'react-hot-toast';
 
 const CommunityManager: React.FC = () => {
-  const { documents: categories, addDocument: addCategory, updateDocument: updateCategory, deleteDocument: deleteCategory } = useFirestore('categories', 'createdAt');
-  const { documents: posts, updateDocument: updatePost, deleteDocument: deletePost } = useFirestore('posts', 'createdAt');
+  const { documents: categories, addDocument: addCategory, updateDocument: updateCategory, deleteDocument: deleteCategory } = useSupabase('categories', 'created_at', false);
+  const { documents: posts, updateDocument: updatePost, deleteDocument: deletePost } = useSupabase('posts', 'created_at', false);
   const [activeTab, setActiveTab] = useState('categories');
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);

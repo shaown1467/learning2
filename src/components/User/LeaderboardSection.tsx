@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Trophy, Medal, Award, User, Edit, Camera } from 'lucide-react';
-import { useFirestore } from '../../hooks/useFirestore';
+import { useSupabase } from '../../hooks/useSupabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { UserProfile } from '../../types';
 import toast from 'react-hot-toast';
 
 const LeaderboardSection: React.FC = () => {
   const { currentUser } = useAuth();
-  const { documents: profiles, addDocument, updateDocument } = useFirestore('userProfiles', 'points');
+  const { documents: profiles, addDocument, updateDocument } = useSupabase('user_profiles', 'points', false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [profileForm, setProfileForm] = useState({
     displayName: '',

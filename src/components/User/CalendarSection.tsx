@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Calendar, Clock, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useFirestore } from '../../hooks/useFirestore';
+import { useSupabase } from '../../hooks/useSupabase';
 import { Event } from '../../types';
 
 const CalendarSection: React.FC = () => {
-  const { documents: events } = useFirestore('events', 'date');
+  const { documents: events } = useSupabase('events', 'date');
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Users, Video, BookOpen, MessageSquare, TrendingUp, Award } from 'lucide-react';
-import { useFirestore } from '../../hooks/useFirestore';
+import { useSupabase } from '../../hooks/useSupabase';
 import { useStats } from '../../hooks/useStats';
 import { UserProfile } from '../../types';
 
@@ -57,7 +57,7 @@ const SimplePieChart: React.FC<{ data: any[] }> = ({ data }) => (
 
 const AnalyticsSection: React.FC = () => {
   const { stats, loading } = useStats();
-  const { documents: userProfiles } = useFirestore('userProfiles', 'points');
+  const { documents: userProfiles } = useSupabase('user_profiles', 'points', false);
 
   const topUsers = userProfiles
     .sort((a: UserProfile, b: UserProfile) => b.points - a.points)

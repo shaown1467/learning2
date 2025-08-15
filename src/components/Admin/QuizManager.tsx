@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Plus, Edit, Trash2, HelpCircle, Award, CheckCircle, Eye } from 'lucide-react';
-import { useFirestore } from '../../hooks/useFirestore';
+import { useSupabase } from '../../hooks/useSupabase';
 import { Quiz, Question, Video, Topic, UserProgress } from '../../types';
 import toast from 'react-hot-toast';
 
 const QuizManager: React.FC = () => {
-  const { documents: quizzes, addDocument, updateDocument, deleteDocument } = useFirestore('quizzes', 'createdAt');
-  const { documents: videos } = useFirestore('videos', 'order');
-  const { documents: topics } = useFirestore('topics', 'order');
-  const { documents: userProgress } = useFirestore('userProgress', 'submittedAt');
+  const { documents: quizzes, addDocument, updateDocument, deleteDocument } = useSupabase('quizzes', 'created_at', false);
+  const { documents: videos } = useSupabase('videos', 'order');
+  const { documents: topics } = useSupabase('topics', 'order');
+  const { documents: userProgress } = useSupabase('user_progress', 'submitted_at', false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingQuiz, setEditingQuiz] = useState<Quiz | null>(null);
   const [viewingResults, setViewingResults] = useState<string | null>(null);

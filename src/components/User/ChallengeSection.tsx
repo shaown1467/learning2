@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Trophy, Calendar, Users, Heart, MessageSquare, Play, Upload, File, Download, CreditCard, Clock, Star } from 'lucide-react';
-import { useFirestore } from '../../hooks/useFirestore';
+import { useSupabase } from '../../hooks/useSupabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { Challenge, ChallengeSubmission, ChallengeComment, ChallengePayment, UserProfile } from '../../types';
 import { extractVideoId, getThumbnailUrl } from '../../utils/youtube';
@@ -10,11 +10,11 @@ import toast from 'react-hot-toast';
 
 const ChallengeSection: React.FC = () => {
   const { currentUser } = useAuth();
-  const { documents: challenges } = useFirestore('challenges', 'createdAt');
-  const { documents: submissions, addDocument: addSubmission, updateDocument: updateSubmission } = useFirestore('challengeSubmissions', 'likesCount');
-  const { documents: comments, addDocument: addComment } = useFirestore('challengeComments', 'createdAt');
-  const { documents: payments, addDocument: addPayment } = useFirestore('challengePayments', 'createdAt');
-  const { documents: userProfiles } = useFirestore('userProfiles');
+  const { documents: challenges } = useSupabase('challenges', 'created_at', false);
+  const { documents: submissions, addDocument: addSubmission, updateDocument: updateSubmission } = useSupabase('challenge_submissions', 'likes_count', false);
+  const { documents: comments, addDocument: addComment } = useSupabase('challenge_comments', 'created_at', false);
+  const { documents: payments, addDocument: addPayment } = useSupabase('challenge_payments', 'created_at', false);
+  const { documents: userProfiles } = useSupabase('user_profiles');
   
   const [activeTab, setActiveTab] = useState<'7day' | '30day'>('7day');
   const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);
