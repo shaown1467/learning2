@@ -64,9 +64,9 @@ const ChallengeManager: React.FC = () => {
     try {
       const challengeData = {
         ...challengeForm,
-        startDate: new Date(challengeForm.startDate),
-        endDate: new Date(challengeForm.endDate),
-        isActive: true
+        start_date: new Date(challengeForm.startDate),
+        end_date: new Date(challengeForm.endDate),
+        is_active: true
       };
 
       if (editingChallenge) {
@@ -74,9 +74,9 @@ const ChallengeManager: React.FC = () => {
         toast.success('চ্যালেঞ্জ আপডেট হয়েছে!');
       } else {
         // Deactivate other challenges of the same type
-        const existingChallenges = challenges.filter((c: Challenge) => c.type === challengeForm.type && c.isActive);
+        const existingChallenges = challenges.filter((c: Challenge) => c.type === challengeForm.type && c.is_active);
         for (const challenge of existingChallenges) {
-          await updateChallenge(challenge.id, { isActive: false });
+          await updateChallenge(challenge.id, { is_active: false });
         }
         
         await addChallenge(challengeData);
@@ -141,13 +141,13 @@ const ChallengeManager: React.FC = () => {
     if (window.confirm(`আপনি কি নিশ্চিত যে ${type === '7day' ? '৭ দিনের' : '৩০ দিনের'} চ্যালেঞ্জ রিসেট করতে চান? সব সাবমিশন মুছে যাবে।`)) {
       try {
         // Delete all submissions for this challenge
-        const challengeSubmissions = submissions.filter((s: ChallengeSubmission) => s.challengeId === challengeId);
+        const challengeSubmissions = submissions.filter((s: ChallengeSubmission) => s.challenge_id === challengeId);
         for (const submission of challengeSubmissions) {
           await deleteSubmission(submission.id);
         }
         
         // Deactivate the challenge
-        await updateChallenge(challengeId, { isActive: false });
+        await updateChallenge(challengeId, { is_active: false });
         
         toast.success('চ্যালেঞ্জ রিসেট হয়েছে!');
       } catch (error) {
@@ -204,7 +204,7 @@ const ChallengeManager: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {challenges.map((challenge: Challenge) => {
-              const challengeSubmissions = submissions.filter((s: ChallengeSubmission) => s.challengeId === challenge.id);
+              const challengeSubmissions = submissions.filter((s: ChallengeSubmission) => s.challenge_id === challenge.id);
               
               return (
                 <div key={challenge.id} className="border border-gray-200 rounded-lg p-6">
@@ -253,7 +253,7 @@ const ChallengeManager: React.FC = () => {
                     <div className="flex items-center space-x-2">
                       <Calendar className="h-4 w-4" />
                       <span>
-                        {new Date(challenge.startDate).toLocaleDateString('bn-BD')} - {new Date(challenge.endDate).toLocaleDateString('bn-BD')}
+                        {new Date(challenge.start_date).toLocaleDateString('bn-BD')} - {new Date(challenge.end_date).toLocaleDateString('bn-BD')}
                       </span>
                     </div>
                     <div className="flex items-center space-x-2">
@@ -267,11 +267,11 @@ const ChallengeManager: React.FC = () => {
                       </div>
                     )}
                     <div className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
-                      challenge.isActive 
+                      challenge.is_active 
                         ? 'bg-green-100 text-green-800' 
                         : 'bg-gray-100 text-gray-800'
                     }`}>
-                      {challenge.isActive ? 'সক্রিয়' : 'নিষ্ক্রিয়'}
+                      {challenge.is_active ? 'সক্রিয়' : 'নিষ্ক্রিয়'}
                     </div>
                   </div>
                 </div>
@@ -292,7 +292,7 @@ const ChallengeManager: React.FC = () => {
                   <div>
                     <h4 className="font-semibold text-gray-900">{submission.title}</h4>
                     <p className="text-sm text-gray-600">
-                      {submission.authorName} • {submission.challengeType === '7day' ? '৭ দিনের চ্যালেঞ্জ' : '৩০ দিনের চ্যালেঞ্জ'}
+                      {submission.author_name} • {submission.challenge_type === '7day' ? '৭ দিনের চ্যালেঞ্জ' : '৩০ দিনের চ্যালেঞ্জ'}
                     </p>
                   </div>
                   <div className="flex space-x-2">
@@ -317,7 +317,7 @@ const ChallengeManager: React.FC = () => {
                 
                 <div className="flex items-center space-x-4 text-sm text-gray-500">
                   <a
-                    href={submission.youtubeUrl}
+                    href={submission.youtube_url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:text-blue-800"
@@ -347,8 +347,8 @@ const ChallengeManager: React.FC = () => {
               <div key={payment.id} className="border border-gray-200 rounded-lg p-4">
                 <div className="flex justify-between items-start mb-3">
                   <div>
-                    <h4 className="font-semibold text-gray-900">{payment.userName}</h4>
-                    <p className="text-sm text-gray-600">{payment.userEmail}</p>
+                    <h4 className="font-semibold text-gray-900">{payment.user_name}</h4>
+                    <p className="text-sm text-gray-600">{payment.user_email}</p>
                   </div>
                   <div className="flex space-x-2">
                     <button
@@ -371,11 +371,11 @@ const ChallengeManager: React.FC = () => {
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="text-gray-600">পেমেন্ট নম্বর:</span>
-                    <p className="font-medium">{payment.paymentNumber}</p>
+                    <p className="font-medium">{payment.payment_number}</p>
                   </div>
                   <div>
                     <span className="text-gray-600">ট্রানজেকশন আইডি:</span>
-                    <p className="font-medium">{payment.transactionId}</p>
+                    <p className="font-medium">{payment.transaction_id}</p>
                   </div>
                   <div>
                     <span className="text-gray-600">পরিমাণ:</span>
@@ -383,7 +383,7 @@ const ChallengeManager: React.FC = () => {
                   </div>
                   <div>
                     <span className="text-gray-600">তারিখ:</span>
-                    <p className="font-medium">{new Date(payment.createdAt).toLocaleDateString('bn-BD')}</p>
+                    <p className="font-medium">{new Date(payment.created_at).toLocaleDateString('bn-BD')}</p>
                   </div>
                 </div>
               </div>

@@ -40,22 +40,22 @@ const ChallengeSection: React.FC = () => {
 
   const currentUserProfile = userProfiles.find((profile: UserProfile) => profile.userId === currentUser?.uid);
   
-  const activeChallenge7Day = challenges.find((c: Challenge) => c.type === '7day' && c.isActive);
-  const activeChallenge30Day = challenges.find((c: Challenge) => c.type === '30day' && c.isActive);
+  const activeChallenge7Day = challenges.find((c: Challenge) => c.type === '7day' && c.is_active);
+  const activeChallenge30Day = challenges.find((c: Challenge) => c.type === '30day' && c.is_active);
   
   const currentChallenge = activeTab === '7day' ? activeChallenge7Day : activeChallenge30Day;
   
   const challengeSubmissions = submissions
     .filter((s: ChallengeSubmission) => 
-      s.challengeType === activeTab && 
+      s.challenge_type === activeTab && 
       s.approved &&
-      (currentChallenge ? s.challengeId === currentChallenge.id : false)
+      (currentChallenge ? s.challenge_id === currentChallenge.id : false)
     )
-    .sort((a: ChallengeSubmission, b: ChallengeSubmission) => b.likesCount - a.likesCount);
+    .sort((a: ChallengeSubmission, b: ChallengeSubmission) => b.likes_count - a.likes_count);
 
   const userPayment = currentChallenge ? payments.find((p: ChallengePayment) => 
-    p.challengeId === currentChallenge.id && 
-    p.userId === currentUser?.uid &&
+    p.challenge_id === currentChallenge.id && 
+    p.user_id === currentUser?.uid &&
     p.status === 'approved'
   ) : null;
 
@@ -91,21 +91,21 @@ const ChallengeSection: React.FC = () => {
 
     try {
       await addSubmission({
-        challengeId: currentChallenge.id,
-        challengeType: activeTab,
-        userId: currentUser.uid,
-        authorName: currentUserProfile?.displayName || currentUser.email?.split('@')[0] || 'ব্যবহারকারী',
-        authorAvatar: currentUserProfile?.avatar,
+        challenge_id: currentChallenge.id,
+        challenge_type: activeTab,
+        user_id: currentUser.uid,
+        author_name: currentUserProfile?.displayName || currentUser.email?.split('@')[0] || 'ব্যবহারকারী',
+        author_avatar: currentUserProfile?.avatar,
         title: submissionForm.title,
         description: submissionForm.description,
-        youtubeUrl: submissionForm.youtubeUrl,
-        videoId,
-        imageUrl: submissionForm.imageUrl,
+        youtube_url: submissionForm.youtubeUrl,
+        video_id: videoId,
+        image_url: submissionForm.imageUrl,
         files: submissionForm.files,
         approved: false,
         likes: [],
-        likesCount: 0,
-        commentsCount: 0
+        likes_count: 0,
+        comments_count: 0
       });
       
       toast.success('প্রজেক্ট জমা দেওয়া হয়েছে! অনুমোদনের জন্য অপেক্ষা করুন।');
@@ -123,12 +123,12 @@ const ChallengeSection: React.FC = () => {
 
     try {
       await addPayment({
-        challengeId: currentChallenge.id,
-        userId: currentUser.uid,
-        userName: currentUserProfile?.displayName || currentUser.email?.split('@')[0] || 'ব্যবহারকারী',
-        userEmail: currentUser.email || '',
-        paymentNumber: paymentForm.paymentNumber,
-        transactionId: paymentForm.transactionId,
+        challenge_id: currentChallenge.id,
+        user_id: currentUser.uid,
+        user_name: currentUserProfile?.displayName || currentUser.email?.split('@')[0] || 'ব্যবহারকারী',
+        user_email: currentUser.email || '',
+        payment_number: paymentForm.paymentNumber,
+        transaction_id: paymentForm.transactionId,
         amount: currentChallenge.price,
         status: 'pending'
       });
@@ -196,7 +196,7 @@ const ChallengeSection: React.FC = () => {
 
       await updateSubmission(submissionId, {
         likes: newLikes,
-        likesCount: newLikes.length
+        likes_count: newLikes.length
       });
     } catch (error) {
       toast.error('লাইক করতে সমস্যা হয়েছে!');
@@ -208,10 +208,10 @@ const ChallengeSection: React.FC = () => {
 
     try {
       await addComment({
-        submissionId,
-        authorId: currentUser.uid,
-        authorName: currentUserProfile?.displayName || currentUser.email?.split('@')[0] || 'ব্যবহারকারী',
-        authorAvatar: currentUserProfile?.avatar,
+        submission_id: submissionId,
+        author_id: currentUser.uid,
+        author_name: currentUserProfile?.displayName || currentUser.email?.split('@')[0] || 'ব্যবহারকারী',
+        author_avatar: currentUserProfile?.avatar,
         content: commentText
       });
 
@@ -219,7 +219,7 @@ const ChallengeSection: React.FC = () => {
       const submission = submissions.find((s: ChallengeSubmission) => s.id === submissionId);
       if (submission) {
         await updateSubmission(submissionId, {
-          commentsCount: submission.commentsCount + 1
+          comments_count: submission.comments_count + 1
         });
       }
       
@@ -235,7 +235,7 @@ const ChallengeSection: React.FC = () => {
   };
 
   const getSubmissionComments = (submissionId: string) => {
-    return comments.filter((comment: ChallengeComment) => comment.submissionId === submissionId);
+    return comments.filter((comment: ChallengeComment) => comment.submission_id === submissionId);
   };
 
   const formatTimeAgo = (date: Date) => {
@@ -334,11 +334,11 @@ const ChallengeSection: React.FC = () => {
                 <div className="flex flex-col lg:flex-row items-start lg:items-center space-y-2 lg:space-y-0 lg:space-x-6 text-sm text-gray-500">
                   <div className="flex items-center space-x-2">
                     <Calendar className="h-4 w-4" />
-                    <span>শুরু: {new Date(currentChallenge.startDate).toLocaleDateString('bn-BD')}</span>
+                    <span>শুরু: {new Date(currentChallenge.start_date).toLocaleDateString('bn-BD')}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Clock className="h-4 w-4" />
-                    <span>শেষ: {new Date(currentChallenge.endDate).toLocaleDateString('bn-BD')}</span>
+                    <span>শেষ: {new Date(currentChallenge.end_date).toLocaleDateString('bn-BD')}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Users className="h-4 w-4" />
@@ -401,29 +401,29 @@ const ChallengeSection: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
                       <div className="relative">
-                        {submission.authorAvatar ? (
+                        {submission.author_avatar ? (
                           <img
-                            src={submission.authorAvatar}
-                            alt={submission.authorName}
+                            src={submission.author_avatar}
+                            alt={submission.author_name}
                             className="w-10 lg:w-12 h-10 lg:h-12 rounded-full object-cover ring-2 ring-purple-100 shadow-md"
                           />
                         ) : (
                           <div className="w-10 lg:w-12 h-10 lg:h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center ring-2 ring-purple-100 shadow-md">
                             <span className="text-white font-bold text-sm lg:text-lg">
-                              {submission.authorName.charAt(0).toUpperCase()}
+                              {submission.author_name.charAt(0).toUpperCase()}
                             </span>
                           </div>
                         )}
                         <div className="absolute -bottom-1 -right-1 w-3 lg:w-4 h-3 lg:h-4 bg-green-400 rounded-full border-2 border-white shadow-md"></div>
                       </div>
                       <div>
-                        <h3 className="font-bold text-gray-900 text-sm lg:text-lg">{submission.authorName}</h3>
+                        <h3 className="font-bold text-gray-900 text-sm lg:text-lg">{submission.author_name}</h3>
                         <div className="flex items-center space-x-3 mt-1">
                           <span className="text-xs text-gray-500 font-medium">{formatTimeAgo(submission.createdAt)}</span>
                           <span className={`px-2 lg:px-3 py-1 rounded-full text-xs font-semibold text-white ${
-                            activeTab === '7day' ? 'bg-purple-500' : 'bg-orange-500'
+                            submission.challenge_type === '7day' ? 'bg-purple-500' : 'bg-orange-500'
                           }`}>
-                            {activeTab === '7day' ? '৭ দিনের চ্যালেঞ্জ' : '৩০ দিনের চ্যালেঞ্জ'}
+                            {submission.challenge_type === '7day' ? '৭ দিনের চ্যালেঞ্জ' : '৩০ দিনের চ্যালেঞ্জ'}
                           </span>
                         </div>
                       </div>
@@ -440,13 +440,13 @@ const ChallengeSection: React.FC = () => {
                   <div className="mb-4">
                     <div className="relative rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
                       <img
-                        src={getThumbnailUrl(submission.videoId, 'maxres')}
+                        src={getThumbnailUrl(submission.video_id, 'maxres')}
                         alt={submission.title}
                         className="w-full h-32 lg:h-48 object-cover"
                       />
                       <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
                         <button
-                          onClick={() => openPlayer(submission.videoId, submission.title)}
+                          onClick={() => openPlayer(submission.video_id, submission.title)}
                           className="bg-white text-gray-900 p-3 rounded-full hover:bg-gray-100 transition-colors transform hover:scale-110"
                         >
                           <Play className="h-4 lg:h-6 w-4 lg:w-6" />
@@ -455,10 +455,10 @@ const ChallengeSection: React.FC = () => {
                     </div>
                   </div>
                   
-                  {submission.imageUrl && (
+                  {submission.image_url && (
                     <div className="mb-4">
                       <img
-                        src={submission.imageUrl}
+                        src={submission.image_url}
                         alt="Project"
                         className="w-full h-32 lg:h-48 object-cover rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300"
                       />
@@ -505,7 +505,7 @@ const ChallengeSection: React.FC = () => {
                         }`}
                       >
                         <Heart className={`h-4 lg:h-5 w-4 lg:w-5 ${isSubmissionLiked(submission) ? 'fill-current' : ''}`} />
-                        <span className="font-bold">{submission.likesCount}</span>
+                        <span className="font-bold">{submission.likes_count}</span>
                         <span className="font-semibold hidden lg:inline">লাইক</span>
                       </button>
                       <button
@@ -513,14 +513,14 @@ const ChallengeSection: React.FC = () => {
                         className="flex items-center space-x-1 lg:space-x-2 px-2 lg:px-4 py-2 rounded-xl text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all duration-300 transform hover:scale-105 hover:shadow-md text-xs lg:text-sm"
                       >
                         <MessageSquare className="h-4 lg:h-5 w-4 lg:w-5" />
-                        <span className="font-bold">{submission.commentsCount}</span>
+                        <span className="font-bold">{submission.comments_count}</span>
                         <span className="font-semibold hidden lg:inline">মন্তব্য</span>
                       </button>
                     </div>
                     <div className="text-xs text-gray-500 font-medium hidden lg:block">
-                      {submission.likesCount > 0 && (
+                      {submission.likes_count > 0 && (
                         <span className="bg-gray-100 px-3 py-1 rounded-full">
-                          {submission.likesCount} জন লাইক করেছেন
+                          {submission.likes_count} জন লাইক করেছেন
                         </span>
                       )}
                     </div>
@@ -535,16 +535,16 @@ const ChallengeSection: React.FC = () => {
                         {submissionComments.map((comment: ChallengeComment) => (
                           <div key={comment.id} className="flex space-x-3">
                             <div className="flex-shrink-0">
-                              {comment.authorAvatar ? (
+                              {comment.author_avatar ? (
                                 <img
-                                  src={comment.authorAvatar}
-                                  alt={comment.authorName}
+                                  src={comment.author_avatar}
+                                  alt={comment.author_name}
                                   className="w-8 lg:w-10 h-8 lg:h-10 rounded-full object-cover ring-2 ring-gray-200"
                                 />
                               ) : (
                                 <div className="w-8 lg:w-10 h-8 lg:h-10 bg-gradient-to-br from-gray-400 to-gray-600 rounded-full flex items-center justify-center">
                                   <span className="text-white text-xs lg:text-sm font-semibold">
-                                    {comment.authorName.charAt(0).toUpperCase()}
+                                    {comment.author_name.charAt(0).toUpperCase()}
                                   </span>
                                 </div>
                               )}
@@ -552,9 +552,9 @@ const ChallengeSection: React.FC = () => {
                             <div className="flex-1">
                               <div className="bg-gradient-to-r from-gray-100 to-purple-50 rounded-xl px-3 lg:px-4 py-2 lg:py-3 hover:from-purple-50 hover:to-pink-50 transition-all duration-300 shadow-sm hover:shadow-md">
                                 <div className="flex items-center space-x-2 mb-2">
-                                  <p className="font-bold text-xs lg:text-sm text-gray-900">{comment.authorName}</p>
+                                  <p className="font-bold text-xs lg:text-sm text-gray-900">{comment.author_name}</p>
                                   <span className="text-xs text-gray-500 bg-white px-2 py-1 rounded-full">
-                                    {formatTimeAgo(comment.createdAt)}
+                                    {formatTimeAgo(comment.created_at)}
                                   </span>
                                 </div>
                                 <p className="text-gray-700 leading-relaxed text-xs lg:text-sm">{comment.content}</p>
