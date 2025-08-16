@@ -137,53 +137,53 @@ export interface Challenge {
   type: '7day' | '30day';
   title: string;
   description: string;
-  startDate: Date;
-  endDate: Date;
-  isActive: boolean;
+  start_date: Date;
+  end_date: Date;
+  is_active: boolean;
   price: number; // 0 for free, amount for paid
-  paymentNumber?: string; // Bkash/Nagad number for 30-day challenge
-  createdAt: Date;
+  payment_number?: string; // Bkash/Nagad number for 30-day challenge
+  created_at: Date;
 }
 
 export interface ChallengeSubmission {
   id: string;
-  challengeId: string;
-  challengeType: '7day' | '30day';
-  userId: string;
-  authorName: string;
-  authorAvatar?: string;
+  challenge_id: string;
+  challenge_type: '7day' | '30day';
+  user_id: string;
+  author_name: string;
+  author_avatar?: string;
   title: string;
   description: string;
-  youtubeUrl: string;
-  videoId: string;
-  imageUrl?: string;
+  youtube_url: string;
+  video_id: string;
+  image_url?: string;
   files?: FileAttachment[];
   approved: boolean;
   likes: string[];
-  likesCount: number;
-  commentsCount: number;
-  createdAt: Date;
+  likes_count: number;
+  comments_count: number;
+  created_at: Date;
 }
 
 export interface ChallengePayment {
   id: string;
-  challengeId: string;
-  userId: string;
-  userName: string;
-  userEmail: string;
-  paymentNumber: string;
-  transactionId: string;
+  challenge_id: string;
+  user_id: string;
+  user_name: string;
+  user_email: string;
+  payment_number: string;
+  transaction_id: string;
   amount: number;
   status: 'pending' | 'approved' | 'rejected';
-  createdAt: Date;
+  created_at: Date;
 }
 
 export interface ChallengeComment {
   id: string;
-  submissionId: string;
-  authorId: string;
-  authorName: string;
-  authorAvatar?: string;
+  submission_id: string;
+  author_id: string;
+  author_name: string;
+  author_avatar?: string;
   content: string;
-  createdAt: Date;
+  created_at: Date;
 }

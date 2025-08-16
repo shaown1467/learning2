@@ -2,7 +2,7 @@ import { supabase } from '../config/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
-export const uploadFile = async (file: File, bucket: string = 'uploads'): Promise<string> => {
+export const uploadFile = async (file: File, folder: string = 'general'): Promise<string> => {
   try {
     // Check if user is authenticated
     const { data: { user } } = await supabase.auth.getUser();
@@ -12,11 +12,11 @@ export const uploadFile = async (file: File, bucket: string = 'uploads'): Promis
 
     // Create unique filename
     const fileExt = file.name.split('.').pop();
-    const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+    const fileName = `${folder}/${user.id}/${Date.now()}.${fileExt}`;
     
     // Upload file to Supabase Storage
     const { data, error } = await supabase.storage
-      .from(bucket)
+      .from('uploads')
       .upload(fileName, file, {
         cacheControl: '3600',
         upsert: false
@@ -26,7 +26,7 @@ export const uploadFile = async (file: File, bucket: string = 'uploads'): Promis
     
     // Get public URL
     const { data: { publicUrl } } = supabase.storage
-      .from(bucket)
+      .from('uploads')
       .getPublicUrl(fileName);
     
     console.log('File uploaded successfully:', publicUrl);
@@ -48,7 +48,7 @@ export const uploadFile = async (file: File, bucket: string = 'uploads'): Promis
   }
 };
 
-export const deleteFile = async (url: string, bucket: string = 'uploads'): Promise<void> => {
+export const deleteFile = async (url: string): Promise<void> => {
   try {
     // Check if user is authenticated
     const { data: { user } } = await supabase.auth.getUser();
@@ -57,12 +57,12 @@ export const deleteFile = async (url: string, bucket: string = 'uploads'): Promi
     }
 
     // Extract file path from URL
-    const urlParts = url.split('/');
-    const fileName = urlParts[urlParts.length - 1];
-    const filePath = `${user.id}/${fileName}`;
+    const urlParts = url.split('/uploads/');
+    if (urlParts.length < 2) return;
+    const filePath = urlParts[1];
 
     const { error } = await supabase.storage
-      .from(bucket)
+      .from('uploads')
       .remove([filePath]);
 
     if (error) throw error;
