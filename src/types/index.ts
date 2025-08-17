@@ -13,7 +13,7 @@ export interface Video {
   description: string;
   youtubeUrl: string;
   videoId: string;
-  topicId: string;
+  topic_id: string;
   order: number;
   files?: FileAttachment[];
   createdAt: Date;
@@ -137,11 +137,11 @@ export interface Challenge {
   type: '7day' | '30day';
   title: string;
   description: string;
-  start_date: Date;
-  end_date: Date;
+  start_date: string;
+  end_date: string;
   is_active: boolean;
   price: number; // 0 for free, amount for paid
-  payment_number?: string; // Bkash/Nagad number for 30-day challenge
+  payment_number?: string;
   created_at: Date;
 }
 

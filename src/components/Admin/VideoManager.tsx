@@ -72,7 +72,7 @@ const VideoManager: React.FC = () => {
         videoId
       };
 
-      if (editingVideo) {
+        topic_id: videoForm.topicId,
         await updateDocument(editingVideo.id, videoData);
         toast.success('ভিডিও আপডেট হয়েছে!');
       } else {

@@ -583,7 +583,7 @@ const ChallengeSection: React.FC = () => {
                           ) : (
                             <div className="w-8 lg:w-10 h-8 lg:h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center">
                               <span className="text-white text-xs lg:text-sm font-semibold">
-                                {currentUser?.email?.charAt(0).toUpperCase()}
+                               {(currentUser?.email || '').charAt(0).toUpperCase()}
                               </span>
                             </div>
                           )}

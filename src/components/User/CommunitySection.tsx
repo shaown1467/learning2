@@ -370,7 +370,7 @@ export const CommunitySection: React.FC = () => {
                       ) : (
                         <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
                           <span className="text-white font-semibold text-sm">
-                            {post.authorName.charAt(0).toUpperCase()}
+                            {(currentUser?.email || '').charAt(0).toUpperCase()}
                           </span>
                         </div>
                       )}
@@ -388,7 +388,7 @@ export const CommunitySection: React.FC = () => {
                           </span>
                           {post.pinned && (
                             <span className="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs font-medium">
-                              পিন করা
+                              {(currentUser?.email || '').charAt(0).toUpperCase()}
                             </span>
                           )}
                         </div>

@@ -16,10 +16,10 @@ const ChallengeManager: React.FC = () => {
     type: '7day' as '7day' | '30day',
     title: '',
     description: '',
-    startDate: '',
-    endDate: '',
+    start_date: '',
+    end_date: '',
     price: 0,
-    paymentNumber: ''
+    payment_number: ''
   });
 
   const resetChallengeForm = () => {
@@ -27,10 +27,10 @@ const ChallengeManager: React.FC = () => {
       type: '7day',
       title: '',
       description: '',
-      startDate: '',
-      endDate: '',
+      start_date: '',
+      end_date: '',
       price: 0,
-      paymentNumber: ''
+      payment_number: ''
     });
     setEditingChallenge(null);
   };
@@ -41,10 +41,10 @@ const ChallengeManager: React.FC = () => {
         type: challenge.type,
         title: challenge.title,
         description: challenge.description,
-        startDate: new Date(challenge.startDate).toISOString().split('T')[0],
-        endDate: new Date(challenge.endDate).toISOString().split('T')[0],
+        start_date: new Date(challenge.start_date).toISOString().split('T')[0],
+        end_date: new Date(challenge.end_date).toISOString().split('T')[0],
         price: challenge.price,
-        paymentNumber: challenge.paymentNumber || ''
+        payment_number: challenge.payment_number || ''
       });
       setEditingChallenge(challenge);
     } else {
@@ -64,8 +64,6 @@ const ChallengeManager: React.FC = () => {
     try {
       const challengeData = {
         ...challengeForm,
-        start_date: new Date(challengeForm.startDate),
-        end_date: new Date(challengeForm.endDate),
         is_active: true
       };
 
@@ -454,8 +452,8 @@ const ChallengeManager: React.FC = () => {
                   <input
                     type="date"
                     required
-                    value={challengeForm.startDate}
-                    onChange={(e) => setChallengeForm({ ...challengeForm, startDate: e.target.value })}
+                    value={challengeForm.start_date}
+                    onChange={(e) => setChallengeForm({ ...challengeForm, start_date: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -467,8 +465,8 @@ const ChallengeManager: React.FC = () => {
                   <input
                     type="date"
                     required
-                    value={challengeForm.endDate}
-                    onChange={(e) => setChallengeForm({ ...challengeForm, endDate: e.target.value })}
+                    value={challengeForm.end_date}
+                    onChange={(e) => setChallengeForm({ ...challengeForm, end_date: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -482,8 +480,8 @@ const ChallengeManager: React.FC = () => {
                     </label>
                     <input
                       type="number"
-                      min="0"
-                      value={challengeForm.price}
+                      value={challengeForm.payment_number}
+                      onChange={(e) => setChallengeForm({ ...challengeForm, payment_number: e.target.value })}
                       onChange={(e) => setChallengeForm({ ...challengeForm, price: parseInt(e.target.value) || 0 })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
