@@ -14,6 +14,18 @@ export const uploadFile = async (file: File, folder: string = 'general'): Promis
     const fileExt = file.name.split('.').pop();
     const fileName = `${folder}/${user.id}/${Date.now()}.${fileExt}`;
     
+    // Check if bucket exists before uploading
+    const { data: buckets, error: bucketsError } = await supabase.storage.listBuckets();
+    if (bucketsError) {
+      console.error('Error checking buckets:', bucketsError);
+      throw new Error('Storage service unavailable');
+    }
+    
+    const uploadsExists = buckets.some(bucket => bucket.name === 'uploads');
+    if (!uploadsExists) {
+      throw new Error('Storage bucket "uploads" not found. Please create it in Supabase Dashboard.');
+    }
+    
     // Upload file to Supabase Storage
     const { data, error } = await supabase.storage
       .from('uploads')
@@ -37,6 +49,8 @@ export const uploadFile = async (file: File, folder: string = 'general'): Promis
     // More specific error messages
     if (error?.message?.includes('not authenticated')) {
       toast.error('ফাইল আপলোড করার অনুমতি নেই। অনুগ্রহ করে লগইন করুন।');
+    } else if (error?.message?.includes('bucket') || error?.message?.includes('Bucket not found')) {
+      toast.error('স্টোরেজ বাকেট পাওয়া যায়নি। Supabase Dashboard এ "uploads" বাকেট তৈরি করুন।');
     } else if (error?.message?.includes('quota')) {
       toast.error('স্টোরেজ সীমা অতিক্রম করেছে।');
     } else if (error?.message?.includes('format')) {
