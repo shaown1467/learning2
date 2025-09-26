@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Users, Video, BookOpen, BarChart3, Settings, PlayCircle, MessageSquare, Calendar, HelpCircle, Trophy } from 'lucide-react';
 import { useStats } from '../../hooks/useStats';
 import TopicManager from './TopicManager';
-import VideoManager from './VideoManager';
+import { VideoManager } from './VideoManager';
 import CommunityManager from './CommunityManager';
 import CalendarManager from './CalendarManager';
 import QuizManager from './QuizManager';
