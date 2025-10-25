@@ -71,23 +71,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             device_info: navigator.userAgent
           });
 
-        // Create or update user profile
-        const { data: existingProfile } = await supabase
+        // Create user profile if it doesn't exist
+        await supabase
           .from('user_profiles')
-          .select('*')
-          .eq('user_id', data.user.id)
-          .single();
-
-        if (!existingProfile) {
-          await supabase
-            .from('user_profiles')
-            .insert({
-              user_id: data.user.id,
-              display_name: data.user.email?.split('@')[0] || 'ব্যবহারকারী',
-              points: 0,
-              completed_videos: 0
-            });
-        }
+          .upsert({
+            user_id: data.user.id,
+            display_name: data.user.email?.split('@')[0] || 'ব্যবহারকারী',
+            points: 0,
+            completed_videos: 0
+          }, {
+            onConflict: 'user_id',
+            ignoreDuplicates: true
+          });
       }
       
       toast.success('সফলভাবে লগইন হয়েছে!');
